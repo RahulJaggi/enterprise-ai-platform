@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from './common/logger/logger.module';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { HealthModule } from './modules/health/health.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { HealthModule } from './modules/health/health.module';
     }),
     LoggerModule,
     HealthModule,
+    AiModule,
   ],
 })
 export class AppModule implements NestModule {
