@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { RootLayout } from '@/components/layouts/root-layout';
 import { DashboardPage } from '@/pages/dashboard/dashboard-page';
 import { AiPlaygroundPage } from '@/pages/ai/ai-playground-page';
+import { KnowledgePage } from '@/pages/knowledge/knowledge-page';
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
       {
         path: 'ai',
         element: <AiPlaygroundPage />,
+      },
+      {
+        path: 'knowledge',
+        element: <KnowledgePage />,
       },
     ],
   },

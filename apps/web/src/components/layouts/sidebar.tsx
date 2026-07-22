@@ -6,8 +6,8 @@ import { LayoutDashboard, Bot, Database, Settings, Shield, Sparkles } from 'luci
 const navigationItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'AI Playground', href: '/ai', icon: Sparkles },
+  { name: 'Knowledge Base', href: '/knowledge', icon: Database },
   { name: 'AI Agents', href: '/agents', icon: Bot, disabled: true },
-  { name: 'Knowledge Base', href: '/knowledge', icon: Database, disabled: true },
   { name: 'Security & Audit', href: '/security', icon: Shield, disabled: true },
   { name: 'Settings', href: '/settings', icon: Settings, disabled: true },
 ];
