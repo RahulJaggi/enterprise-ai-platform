@@ -9,6 +9,7 @@ import { ChunkModule } from './modules/chunks/chunk.module';
 import { EmbeddingModule } from './modules/embeddings/embedding.module';
 import { VectorModule } from './modules/vector/vector.module';
 import { SearchModule } from './modules/search/search.module';
+import { RagModule } from './modules/rag/rag.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SearchModule } from './modules/search/search.module';
     EmbeddingModule,
     VectorModule,
     SearchModule,
+    RagModule,
   ],
 })
 export class AppModule implements NestModule {
