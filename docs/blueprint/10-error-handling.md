@@ -33,15 +33,15 @@ Exception handling utilizes a global NestJS `ExceptionFilter` pipeline:
 
 ## Error Classification Table
 
-| Error Class | Status Code | Error Code | Description |
-| :--- | :--- | :--- | :--- |
-| `BadRequestException` | 400 | `INVALID_PAYLOAD` | Request body failed DTO validation rules |
-| `UnauthorizedException` | 401 | `UNAUTHORIZED` | Invalid or missing authentication credentials |
-| `ForbiddenException` | 403 | `FORBIDDEN` | Principal lacks required RBAC role |
-| `NotFoundException` | 404 | `NOT_FOUND` | Requested entity does not exist |
-| `PromptInjectionException` | 422 | `PROMPT_INJECTION_DETECTED` | Input text triggered prompt safety guardrails |
-| `VectorStoreException` | 503 | `VECTOR_DB_UNAVAILABLE` | Qdrant vector database query timeout or failure |
-| `InternalServerErrorException` | 500 | `INTERNAL_SERVER_ERROR` | Unhandled system exception |
+| Error Class                    | Status Code | Error Code                  | Description                                     |
+| :----------------------------- | :---------- | :-------------------------- | :---------------------------------------------- |
+| `BadRequestException`          | 400         | `INVALID_PAYLOAD`           | Request body failed DTO validation rules        |
+| `UnauthorizedException`        | 401         | `UNAUTHORIZED`              | Invalid or missing authentication credentials   |
+| `ForbiddenException`           | 403         | `FORBIDDEN`                 | Principal lacks required RBAC role              |
+| `NotFoundException`            | 404         | `NOT_FOUND`                 | Requested entity does not exist                 |
+| `PromptInjectionException`     | 422         | `PROMPT_INJECTION_DETECTED` | Input text triggered prompt safety guardrails   |
+| `VectorStoreException`         | 503         | `VECTOR_DB_UNAVAILABLE`     | Qdrant vector database query timeout or failure |
+| `InternalServerErrorException` | 500         | `INTERNAL_SERVER_ERROR`     | Unhandled system exception                      |
 
 ---
 
@@ -68,7 +68,7 @@ sequenceDiagram
 ## Best Practices
 
 - **Never Swallowing Errors**: Catch blocks must log errors or rethrow typed domain exceptions.
-- **Sanitized Messages**: Public error messages must explain *what went wrong* without exposing *how the system is implemented*.
+- **Sanitized Messages**: Public error messages must explain _what went wrong_ without exposing _how the system is implemented_.
 
 ---
 

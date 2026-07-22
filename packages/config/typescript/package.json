@@ -1,0 +1,11 @@
+{
+  "name": "@enterprise-ai/tsconfig",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared TypeScript configurations for Enterprise AI Platform",
+  "files": [
+    "base.json",
+    "node.json",
+    "react.json"
+  ]
+}

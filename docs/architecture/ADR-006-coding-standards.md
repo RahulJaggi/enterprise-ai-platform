@@ -1,9 +1,9 @@
 # ADR-006: Coding Standards
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Engineering Excellence Team
-* **Deciders**: Principal Architect, Engineering Managers
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Engineering Excellence Team
+- **Deciders**: Principal Architect, Engineering Managers
 
 ---
 
@@ -27,23 +27,23 @@ We decide to enforce strict static analysis and code style rules across the mono
 ## Alternatives Considered
 
 1. **Permissive TypeScript Config (`noImplicitAny: false`)**:
-   - *Rejected*: Leads to hidden `undefined` crashes and compromises monorepo type safety.
+   - _Rejected_: Leads to hidden `undefined` crashes and compromises monorepo type safety.
 2. **Manual Formatting Code Reviews**:
-   - *Rejected*: Wastes pull request review time on mechanical style discussions.
+   - _Rejected_: Wastes pull request review time on mechanical style discussions.
 
 ---
 
 ## Pros
 
-* **Zero Style Friction**: Code formatting is automated via Prettier on save and git commit.
-* **Catch Errors Early**: Strict TypeScript prevents common runtime null pointer and type coercion bugs.
-* **Automated Changelogs**: Conventional commits allow automated release notes generation via `CHANGELOG.md`.
+- **Zero Style Friction**: Code formatting is automated via Prettier on save and git commit.
+- **Catch Errors Early**: Strict TypeScript prevents common runtime null pointer and type coercion bugs.
+- **Automated Changelogs**: Conventional commits allow automated release notes generation via `CHANGELOG.md`.
 
 ---
 
 ## Cons
 
-* Initial developer friction when refactoring legacy or weakly typed third-party interfaces.
+- Initial developer friction when refactoring legacy or weakly typed third-party interfaces.
 
 ---
 

@@ -1,9 +1,9 @@
 # ADR-[NUMBER]: [SHORT TITLE OF DECISION]
 
-* **Status**: [Proposed | Accepted | Rejected | Deprecated | Superseded]
-* **Date**: YYYY-MM-DD
-* **Authors**: [Author Names]
-* **Deciders**: [List of key stakeholders involved in decision]
+- **Status**: [Proposed | Accepted | Rejected | Deprecated | Superseded]
+- **Date**: YYYY-MM-DD
+- **Authors**: [Author Names]
+- **Deciders**: [List of key stakeholders involved in decision]
 
 ---
 
@@ -15,8 +15,8 @@
 
 ## Decision Drivers
 
-* [driver 1, e.g., security, compliance, performance]
-* [driver 2, e.g., developer velocity, operational cost]
+- [driver 1, e.g., security, compliance, performance]
+- [driver 2, e.g., developer velocity, operational cost]
 
 ---
 
@@ -34,13 +34,13 @@ Chosen Option: **[Option X]**, because [justification, e.g., only option that me
 
 ### Positive Consequences
 
-* [e.g., improves performance by 40%]
-* [e.g., provides air-gapped deployment capability]
+- [e.g., improves performance by 40%]
+- [e.g., provides air-gapped deployment capability]
 
 ### Negative Consequences
 
-* [e.g., adds complexity to build pipeline]
-* [e.g., requires additional memory overhead]
+- [e.g., adds complexity to build pipeline]
+- [e.g., requires additional memory overhead]
 
 ---
 
@@ -48,10 +48,10 @@ Chosen Option: **[Option X]**, because [justification, e.g., only option that me
 
 ### [Option 1]
 
-* **Good**, because [argument]
-* **Bad**, because [argument]
+- **Good**, because [argument]
+- **Bad**, because [argument]
 
 ### [Option 2]
 
-* **Good**, because [argument]
-* **Bad**, because [argument]
+- **Good**, because [argument]
+- **Bad**, because [argument]

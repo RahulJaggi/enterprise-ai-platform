@@ -19,6 +19,6 @@ An ADR is a document that captures an important architectural decision made alon
 
 ## 📜 Index of Decision Records
 
-| ID | Title | Status | Date |
-| :--- | :--- | :--- | :--- |
+| ID       | Title                                                                 | Status     | Date       |
+| :------- | :-------------------------------------------------------------------- | :--------- | :--------- |
 | **0000** | [Adopt ADR Process for Platform Decisions](0000-adopt-adr-process.md) | `Accepted` | 2026-07-22 |

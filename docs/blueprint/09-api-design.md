@@ -39,6 +39,7 @@ APIs follow RESTful URI conventions versioned at `/api/v1/`:
 ## Standard Response Envelopes
 
 ### Success Envelope
+
 ```json
 {
   "success": true,
@@ -53,6 +54,7 @@ APIs follow RESTful URI conventions versioned at `/api/v1/`:
 ```
 
 ### Error Envelope
+
 ```json
 {
   "success": false,

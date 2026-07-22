@@ -37,11 +37,11 @@ Background processing uses dedicated queue workers separated from the API Gatewa
 
 ## Queue Configuration Parameters
 
-| Queue Name | Concurrency | Max Retries | Backoff Strategy | Job Timeout |
-| :--- | :--- | :--- | :--- | :--- |
-| `document-ingestion` | 5 workers | 3 retries | Exponential (10s base) | 15 minutes |
-| `audit-logging` | 10 workers | 5 retries | Fixed (2s base) | 30 seconds |
-| `scheduled-tasks` | 1 worker | 2 retries | Exponential (60s base) | 1 hour |
+| Queue Name           | Concurrency | Max Retries | Backoff Strategy       | Job Timeout |
+| :------------------- | :---------- | :---------- | :--------------------- | :---------- |
+| `document-ingestion` | 5 workers   | 3 retries   | Exponential (10s base) | 15 minutes  |
+| `audit-logging`      | 10 workers  | 5 retries   | Fixed (2s base)        | 30 seconds  |
+| `scheduled-tasks`    | 1 worker    | 2 retries   | Exponential (60s base) | 1 hour      |
 
 ---
 
@@ -60,7 +60,7 @@ sequenceDiagram
     Gateway->>Gateway: Save File to Temporary Object Store
     Gateway->>Queue: Push Job "ingest-doc" { docId, tenantId, filePath }
     Gateway-->>User: HTTP 202 Accepted (Job ID: #job_881)
-    
+
     Queue->>Worker: Dispatch Job #job_881
     Worker->>Worker: Extract Text & Generate Vector Chunks
     Worker->>Qdrant: Index Vector Embeddings

@@ -35,12 +35,12 @@ Level 3: Semantic LLM Cache (Vector Match in Qdrant)
 
 ## Cache Invalidation Matrix
 
-| Cache Domain | Key Pattern | TTL | Invalidation Strategy |
-| :--- | :--- | :--- | :--- |
-| User Session | `session:{userId}` | 15 min | Explicit on logout or password change |
-| Agent Config | `agent:{tenantId}:{agentId}` | 1 hour | Event-driven on agent update |
-| Tenant Settings | `tenant:{tenantId}` | 24 hours | Event-driven on tenant subscription change |
-| Semantic Prompt Cache | `semantic:{vectorHash}` | 7 days | LRU eviction policy |
+| Cache Domain          | Key Pattern                  | TTL      | Invalidation Strategy                      |
+| :-------------------- | :--------------------------- | :------- | :----------------------------------------- |
+| User Session          | `session:{userId}`           | 15 min   | Explicit on logout or password change      |
+| Agent Config          | `agent:{tenantId}:{agentId}` | 1 hour   | Event-driven on agent update               |
+| Tenant Settings       | `tenant:{tenantId}`          | 24 hours | Event-driven on tenant subscription change |
+| Semantic Prompt Cache | `semantic:{vectorHash}`      | 7 days   | LRU eviction policy                        |
 
 ---
 

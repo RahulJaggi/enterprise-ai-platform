@@ -2,18 +2,14 @@
 
 ## Purpose
 
-The `@enterprise-ai/config` package centralizes developer tooling configurations (ESLint rules, Prettier formatting, Tailwind CSS presets, Jest/Vitest setups) consumed across apps and packages.
+This directory contains shared developer tooling configurations for TypeScript, ESLint, and Prettier consumed across all workspace applications and packages.
 
 ---
 
-## 🎯 Planned Responsibilities
+## 📂 Sub-Package Configurations
 
-- **TypeScript Configs**: `tsconfig.base.json`, `tsconfig.react.json`, `tsconfig.node.json`.
-- **ESLint Presets**: Strict enterprise linting rules for React, NestJS, and Node microservices.
-- **Tailwind Presets**: Shared design system colors, typography, and utility classes for `@enterprise-ai/ui` and `@enterprise-ai/web`.
-
----
-
-## 🛑 Current Status
-
-Workspace placeholder. Configuration presets will be populated in subsequent phases.
+| Config Package                       | Path                                                  | Purpose                                                                |
+| :----------------------------------- | :---------------------------------------------------- | :--------------------------------------------------------------------- |
+| **`@enterprise-ai/tsconfig`**        | [`packages/config/typescript/`](typescript/README.md) | Shared TypeScript `tsconfig` bases (Base, Node/NestJS, React/Next.js). |
+| **`@enterprise-ai/eslint-config`**   | [`packages/config/eslint/`](eslint/README.md)         | Shared ESLint rules and code quality presets.                          |
+| **`@enterprise-ai/prettier-config`** | [`packages/config/prettier/`](prettier/README.md)     | Shared Prettier code formatting rules.                                 |

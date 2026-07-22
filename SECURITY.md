@@ -10,10 +10,10 @@ The Enterprise AI Platform is designed for mission-critical enterprise environme
 
 Only the latest release versions receive active security updates and patch releases:
 
-| Version | Supported |
-| :--- | :--- |
-| `v0.1.x` | :white_check_mark: Active Development |
-| `< v0.1.0` | :x: End of Life |
+| Version    | Supported                             |
+| :--------- | :------------------------------------ |
+| `v0.1.x`   | :white_check_mark: Active Development |
+| `< v0.1.0` | :x: End of Life                       |
 
 ---
 
@@ -22,6 +22,7 @@ Only the latest release versions receive active security updates and patch relea
 If you discover a security vulnerability within this repository or platform, please **do not** open a public issue.
 
 ### Disclosure Process
+
 1. Send a detailed report to the security response team at `security@enterprise-ai.internal`.
 2. Include the following details in your report:
    - Description of the vulnerability and potential impact.
@@ -30,6 +31,7 @@ If you discover a security vulnerability within this repository or platform, ple
    - Any proposed mitigations or fixes.
 
 ### Response SLA
+
 - **Initial Acknowledgment**: Within 24 hours.
 - **Triage & Risk Assessment**: Within 3 business days.
 - **Fix & Patch Advisory**: Dependent on severity (Critical: <7 days, High: <14 days).

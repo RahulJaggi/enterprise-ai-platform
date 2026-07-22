@@ -1,9 +1,9 @@
 # ADR-005: Database Strategy
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Data & Database Infrastructure Team
-* **Deciders**: Principal Architect, Lead Database Administrator
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Data & Database Infrastructure Team
+- **Deciders**: Principal Architect, Lead Database Administrator
 
 ---
 
@@ -26,26 +26,26 @@ We decide to implement a **Polyglot Persistence Strategy**:
 ## Alternatives Considered
 
 1. **PostgreSQL + `pgvector` for Everything**:
-   - *Rejected*: While `pgvector` is convenient, Qdrant provides superior HNSW indexing performance, payload filtering speed, and dedicated vector memory management at enterprise scale.
+   - _Rejected_: While `pgvector` is convenient, Qdrant provides superior HNSW indexing performance, payload filtering speed, and dedicated vector memory management at enterprise scale.
 2. **MongoDB / Document Store**:
-   - *Rejected*: Relational schema constraints are required to guarantee relational integrity for audit logs and RBAC credentials.
+   - _Rejected_: Relational schema constraints are required to guarantee relational integrity for audit logs and RBAC credentials.
 3. **SaaS Vector Databases (Pinecone)**:
-   - *Rejected*: Cloud-only vector stores conflict with enterprise air-gapped on-premise deployment requirements.
+   - _Rejected_: Cloud-only vector stores conflict with enterprise air-gapped on-premise deployment requirements.
 
 ---
 
 ## Pros
 
-* **Optimal Engine for Each Use-Case**: Relational integrity via Postgres, microsecond caching via Redis, and specialized vector indexing via Qdrant.
-* **Multi-Tenant Payload Filtering**: Qdrant enforces tenant-level payload index isolation without cross-tenant vector data leaks.
-* **Local & Production Parity**: All three engines run locally via Docker Compose and scale seamlessly to cloud managed services.
+- **Optimal Engine for Each Use-Case**: Relational integrity via Postgres, microsecond caching via Redis, and specialized vector indexing via Qdrant.
+- **Multi-Tenant Payload Filtering**: Qdrant enforces tenant-level payload index isolation without cross-tenant vector data leaks.
+- **Local & Production Parity**: All three engines run locally via Docker Compose and scale seamlessly to cloud managed services.
 
 ---
 
 ## Cons
 
-* Increases operational complexity of running three separate database systems.
-* Requires multi-database backup and disaster recovery procedures.
+- Increases operational complexity of running three separate database systems.
+- Requires multi-database backup and disaster recovery procedures.
 
 ---
 

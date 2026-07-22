@@ -30,12 +30,12 @@ All software engineers, AI developers, and system architects contributing to thi
 Every module, component, and class within the platform must adhere to SOLID object-oriented and functional design principles:
 
 - **Single Responsibility Principle (SRP)**:
-  - Each module, class, or service must have *one, and only one, reason to change*.
-  - *Example*: A NestJS service handling user authentication (`AuthService`) must never directly execute vector database embedding calculations (`VectorService`).
+  - Each module, class, or service must have _one, and only one, reason to change_.
+  - _Example_: A NestJS service handling user authentication (`AuthService`) must never directly execute vector database embedding calculations (`VectorService`).
 
 - **Open/Closed Principle (OCP)**:
-  - Software entities must be *open for extension, but closed for modification*.
-  - *Example*: Abstract LLM providers behind a generic `LLMProvider` interface so new models (e.g. Ollama, OpenAI, Claude) can be added without mutating existing execution loops.
+  - Software entities must be _open for extension, but closed for modification_.
+  - _Example_: Abstract LLM providers behind a generic `LLMProvider` interface so new models (e.g. Ollama, OpenAI, Claude) can be added without mutating existing execution loops.
 
 - **Liskov Substitution Principle (LSP)**:
   - Derived classes or interface implementations must be completely substitutable for their base abstractions without altering application correctness.
@@ -126,6 +126,7 @@ apps/api/src/modules/
 ```
 
 Benefits:
+
 - High cohesion and localized context when working on a specific feature.
 - Deletion or refactoring of a feature requires operating within a single directory boundary.
 

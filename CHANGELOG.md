@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Enterprise repository foundation and standards documentation.
 - Project `README.md` outlining system architecture, tech stack, roadmap, and branch policies.
 - Governance files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `LICENSE`.
@@ -21,4 +22,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-07-22
 
 ### Added
+
 - Initial repository setup for Enterprise AI Platform.

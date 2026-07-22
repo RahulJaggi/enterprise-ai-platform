@@ -36,12 +36,12 @@ Event messaging utilizes an in-memory Event Emitter for intra-process events and
 
 ## Core Domain Events Table
 
-| Event Name | Publisher | Payload Data | Subscribers |
-| :--- | :--- | :--- | :--- |
-| `user.logged_in` | `AuthModule` | `userId`, `tenantId`, `ipAddress` | `AuditModule`, `SecurityAlertService` |
-| `agent.execution_started` | `AgentModule` | `agentId`, `runId`, `tenantId` | `TelemetryService` |
-| `agent.execution_completed` | `AgentModule` | `agentId`, `runId`, `tokenUsage` | `BillingService`, `AuditModule` |
-| `document.indexed` | `KnowledgeModule` | `docId`, `tenantId`, `vectorCount` | `NotificationService` |
+| Event Name                  | Publisher         | Payload Data                       | Subscribers                           |
+| :-------------------------- | :---------------- | :--------------------------------- | :------------------------------------ |
+| `user.logged_in`            | `AuthModule`      | `userId`, `tenantId`, `ipAddress`  | `AuditModule`, `SecurityAlertService` |
+| `agent.execution_started`   | `AgentModule`     | `agentId`, `runId`, `tenantId`     | `TelemetryService`                    |
+| `agent.execution_completed` | `AgentModule`     | `agentId`, `runId`, `tokenUsage`   | `BillingService`, `AuditModule`       |
+| `document.indexed`          | `KnowledgeModule` | `docId`, `tenantId`, `vectorCount` | `NotificationService`                 |
 
 ---
 
@@ -57,7 +57,7 @@ sequenceDiagram
 
     AgentService->>AgentService: Complete Agent Run Execution
     AgentService->>Emitter: Publish `agent.execution_completed` { runId, tenantId, tokens: 450 }
-    
+
     par Async Processing
         Emitter->>Audit: Deliver Event -> Append to PostgreSQL Audit Log
     and

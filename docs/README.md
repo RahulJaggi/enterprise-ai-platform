@@ -6,12 +6,12 @@ Welcome to the documentation root for the Enterprise AI Platform. This directory
 
 ## 📂 Documentation Directory Structure
 
-| Section | Location | Description |
-| :--- | :--- | :--- |
-| **Architecture** | [`docs/architecture/`](architecture/README.md) | System design, component blueprints, data flows, and security threat models. |
-| **Decisions** | [`docs/decisions/`](decisions/README.md) | Architectural Decision Records (ADRs) tracking key engineering decisions. |
-| **API Specs** | [`docs/api/`](api/README.md) | REST endpoints, WebSocket protocols, GraphQL schemas, and OpenAPI specifications. |
-| **Setup & Onboarding** | [`docs/setup/`](setup/README.md) | Local environment provisioning, prerequisite configuration, and dev workflows. |
+| Section                | Location                                       | Description                                                                       |
+| :--------------------- | :--------------------------------------------- | :-------------------------------------------------------------------------------- |
+| **Architecture**       | [`docs/architecture/`](architecture/README.md) | System design, component blueprints, data flows, and security threat models.      |
+| **Decisions**          | [`docs/decisions/`](decisions/README.md)       | Architectural Decision Records (ADRs) tracking key engineering decisions.         |
+| **API Specs**          | [`docs/api/`](api/README.md)                   | REST endpoints, WebSocket protocols, GraphQL schemas, and OpenAPI specifications. |
+| **Setup & Onboarding** | [`docs/setup/`](setup/README.md)               | Local environment provisioning, prerequisite configuration, and dev workflows.    |
 
 ---
 

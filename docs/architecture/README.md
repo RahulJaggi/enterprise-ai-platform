@@ -36,17 +36,17 @@ The Enterprise AI Platform is composed of six core subsystems:
 
 All core architectural decisions are recorded under this directory:
 
-| ADR | Title | Status | Date |
-| :--- | :--- | :--- | :--- |
-| **[ADR-001](ADR-001-monorepo-strategy.md)** | Monorepo Strategy | `Accepted` | 2026-07-22 |
-| **[ADR-002](ADR-002-frontend-architecture.md)** | Frontend Architecture | `Accepted` | 2026-07-22 |
-| **[ADR-003](ADR-003-backend-architecture.md)** | Backend Architecture | `Accepted` | 2026-07-22 |
-| **[ADR-004](ADR-004-ai-architecture.md)** | AI Architecture | `Accepted` | 2026-07-22 |
-| **[ADR-005](ADR-005-database-strategy.md)** | Database Strategy | `Accepted` | 2026-07-22 |
-| **[ADR-006](ADR-006-coding-standards.md)** | Coding Standards | `Accepted` | 2026-07-22 |
-| **[ADR-007](ADR-007-security-standards.md)** | Security Standards | `Accepted` | 2026-07-22 |
-| **[ADR-008](ADR-008-testing-strategy.md)** | Testing Strategy | `Accepted` | 2026-07-22 |
-| **[ADR-009](ADR-009-deployment-strategy.md)** | Deployment Strategy | `Accepted` | 2026-07-22 |
+| ADR                                              | Title                  | Status     | Date       |
+| :----------------------------------------------- | :--------------------- | :--------- | :--------- |
+| **[ADR-001](ADR-001-monorepo-strategy.md)**      | Monorepo Strategy      | `Accepted` | 2026-07-22 |
+| **[ADR-002](ADR-002-frontend-architecture.md)**  | Frontend Architecture  | `Accepted` | 2026-07-22 |
+| **[ADR-003](ADR-003-backend-architecture.md)**   | Backend Architecture   | `Accepted` | 2026-07-22 |
+| **[ADR-004](ADR-004-ai-architecture.md)**        | AI Architecture        | `Accepted` | 2026-07-22 |
+| **[ADR-005](ADR-005-database-strategy.md)**      | Database Strategy      | `Accepted` | 2026-07-22 |
+| **[ADR-006](ADR-006-coding-standards.md)**       | Coding Standards       | `Accepted` | 2026-07-22 |
+| **[ADR-007](ADR-007-security-standards.md)**     | Security Standards     | `Accepted` | 2026-07-22 |
+| **[ADR-008](ADR-008-testing-strategy.md)**       | Testing Strategy       | `Accepted` | 2026-07-22 |
+| **[ADR-009](ADR-009-deployment-strategy.md)**    | Deployment Strategy    | `Accepted` | 2026-07-22 |
 | **[ADR-010](ADR-010-observability-strategy.md)** | Observability Strategy | `Accepted` | 2026-07-22 |
 
 ---

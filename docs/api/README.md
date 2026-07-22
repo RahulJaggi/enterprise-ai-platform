@@ -8,12 +8,12 @@ This directory contains the official API specifications, OpenAPI contracts, WebS
 
 ## 📡 Planned API Domains
 
-| Domain | Protocol | Description |
-| :--- | :--- | :--- |
-| **Authentication & Users** | REST (`/api/v1/auth`) | User login, tenant onboarding, token refresh, RBAC management. |
-| **Agents & Workflows** | REST / WS (`/api/v1/agents`) | Agent CRUD, state graph execution, live stream agent thoughts & steps. |
-| **RAG Ingestion & Vector Search** | REST (`/api/v1/rag`) | Document upload, embedding indexing, semantic search queries. |
-| **Models & Providers** | REST (`/api/v1/models`) | LLM provider management, Ollama model pulling, token usage analytics. |
+| Domain                            | Protocol                     | Description                                                            |
+| :-------------------------------- | :--------------------------- | :--------------------------------------------------------------------- |
+| **Authentication & Users**        | REST (`/api/v1/auth`)        | User login, tenant onboarding, token refresh, RBAC management.         |
+| **Agents & Workflows**            | REST / WS (`/api/v1/agents`) | Agent CRUD, state graph execution, live stream agent thoughts & steps. |
+| **RAG Ingestion & Vector Search** | REST (`/api/v1/rag`)         | Document upload, embedding indexing, semantic search queries.          |
+| **Models & Providers**            | REST (`/api/v1/models`)      | LLM provider management, Ollama model pulling, token usage analytics.  |
 
 ---
 

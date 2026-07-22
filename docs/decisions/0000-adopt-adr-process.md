@@ -1,9 +1,9 @@
 # ADR-0000: Adopt ADR Process for Platform Decisions
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Core Architecture Team
-* **Deciders**: Enterprise AI Platform Maintainers
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Core Architecture Team
+- **Deciders**: Enterprise AI Platform Maintainers
 
 ---
 
@@ -15,9 +15,9 @@ As the Enterprise AI Platform grows in scope across frontend, backend, AI engine
 
 ## Decision Drivers
 
-* Clear documentation of technical choices and trade-offs.
-* Historical context for future contributors and security auditors.
-* Structured governance process for introducing major framework or infrastructure changes.
+- Clear documentation of technical choices and trade-offs.
+- Historical context for future contributors and security auditors.
+- Structured governance process for introducing major framework or infrastructure changes.
 
 ---
 
@@ -26,8 +26,10 @@ As the Enterprise AI Platform grows in scope across frontend, backend, AI engine
 Chosen Option: **Adopt lightweight Markdown-based ADRs stored in `docs/decisions/`**, using a standard template.
 
 ### Positive Consequences
-* Clear record of why decisions were made.
-* Easy to review via Git Pull Requests.
+
+- Clear record of why decisions were made.
+- Easy to review via Git Pull Requests.
 
 ### Negative Consequences
-* Small operational overhead when proposing major architecture changes.
+
+- Small operational overhead when proposing major architecture changes.

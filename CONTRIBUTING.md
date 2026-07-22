@@ -13,7 +13,9 @@ All contributors are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT
 ## Getting Started
 
 ### Prerequisites
+
 Before starting development, ensure you have installed:
+
 - **Node.js**: `v20.x` or higher (LTS recommended)
 - **pnpm** / **npm**: `v10.x` or higher
 - **Python**: `3.11+`
@@ -21,6 +23,7 @@ Before starting development, ensure you have installed:
 - **Git**: `2.40+`
 
 ### Repository Setup
+
 1. Fork and clone the repository:
    ```bash
    git clone https://github.com/RahulJaggi/enterprise-ai-platform.git
@@ -39,14 +42,15 @@ Before starting development, ensure you have installed:
 
 We follow a structured Git Flow / Trunk-Based hybrid strategy:
 
-* `main` — Production-ready code. Protected branch. Requires signed commits and PR approval.
-* `develop` — Integration branch for incoming features and fixes.
-* `feature/<short-description>` — Feature development branches off `develop`.
-* `fix/<short-description>` — Bug fix branches off `develop`.
-* `hotfix/<short-description>` — Critical production fixes off `main`.
-* `release/vX.Y.Z` — Release preparation branches.
+- `main` — Production-ready code. Protected branch. Requires signed commits and PR approval.
+- `develop` — Integration branch for incoming features and fixes.
+- `feature/<short-description>` — Feature development branches off `develop`.
+- `fix/<short-description>` — Bug fix branches off `develop`.
+- `hotfix/<short-description>` — Critical production fixes off `main`.
+- `release/vX.Y.Z` — Release preparation branches.
 
 ### Naming Conventions
+
 - Feature: `feature/auth-rbac-integration`
 - Fix: `fix/qdrant-connection-retry`
 - Refactor: `refactor/langgraph-state-schema`
@@ -67,20 +71,22 @@ We enforce the [Conventional Commits](https://www.conventionalcommits.org/) spec
 ```
 
 ### Commit Types
-| Type | Purpose |
-| :--- | :--- |
-| `feat` | A new user-facing or system feature |
-| `fix` | A bug fix |
-| `docs` | Documentation changes only |
-| `style` | Formatting, missing semi-colons, no code logic change |
+
+| Type       | Purpose                                                 |
+| :--------- | :------------------------------------------------------ |
+| `feat`     | A new user-facing or system feature                     |
+| `fix`      | A bug fix                                               |
+| `docs`     | Documentation changes only                              |
+| `style`    | Formatting, missing semi-colons, no code logic change   |
 | `refactor` | Code change that neither fixes a bug nor adds a feature |
-| `perf` | Code change that improves performance |
-| `test` | Adding or updating tests |
-| `build` | Changes to build system or dependencies |
-| `ci` | Changes to CI configuration files or scripts |
-| `chore` | Maintenance tasks or non-src file updates |
+| `perf`     | Code change that improves performance                   |
+| `test`     | Adding or updating tests                                |
+| `build`    | Changes to build system or dependencies                 |
+| `ci`       | Changes to CI configuration files or scripts            |
+| `chore`    | Maintenance tasks or non-src file updates               |
 
 ### Examples
+
 - `feat(rag): add chunking strategy configuration for PDF ingestion`
 - `fix(backend): resolve token expiration race condition in NestJS guard`
 - `docs(architecture): document LangGraph agent execution loop`
@@ -110,6 +116,7 @@ We enforce the [Conventional Commits](https://www.conventionalcommits.org/) spec
 ## Documentation
 
 If your changes alter APIs, architecture, environment variables, or workflows, update the relevant documentation under `/docs`:
+
 - Architectural changes -> `docs/architecture/`
 - Architecture decisions -> `docs/decisions/` (ADR)
 - API modifications -> `docs/api/`

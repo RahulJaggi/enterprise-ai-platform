@@ -21,6 +21,7 @@ graph TD
 ```
 
 ### Key Subsystems:
+
 1. **Presentation Plane (`apps/web`)**: Next.js 15 React application for agent administration, document upload dashboards, and real-time streaming chat.
 2. **API Gateway Plane (`apps/api`)**: NestJS backend managing authentication, RBAC, rate limiting, and request routing.
 3. **AI Engine Plane (`packages/ai`)**: LangGraph & LangChain stateful graph orchestrator managing agent reasoning loops and tool execution.

@@ -11,7 +11,7 @@ This document details the enterprise security posture, Zero Trust service bounda
 Security is structured around a **Defense in Depth** model:
 
 ```text
-[Cloud WAF / Rate Limiter] 
+[Cloud WAF / Rate Limiter]
         |
         v
 [API Gateway Auth & RBAC]

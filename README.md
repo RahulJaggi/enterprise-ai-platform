@@ -68,6 +68,7 @@ The platform follows a microservices / modular monorepo architecture divided int
 ```
 
 ### Architecture Description
+
 1. **Frontend Layer**: Next.js 15 web application providing real-time chat interfaces, agent builder UI, document ingestion dashboards, and administrative controls.
 2. **Backend API Gateway**: NestJS application handling user authentication, session management, RBAC enforcement, rate limiting, and request routing.
 3. **AI Engine / Agent Orchestrator**: LangGraph runtime processing complex multi-step reasoning loops, agent state persistence, tool execution, and agentic workflows.
@@ -79,16 +80,16 @@ The platform follows a microservices / modular monorepo architecture divided int
 
 ## 🛠 Planned Tech Stack
 
-| Category | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend UI** | Next.js 15, React 19, TypeScript, Tailwind CSS | Enterprise Admin Portal & Agent Interfaces |
-| **Backend Core** | NestJS, TypeScript, Node.js v20+ | API Gateway, Auth, System Services |
-| **AI Orchestration** | LangGraph, LangChain, Python / TypeScript | Stateful Agent Workflows & Tool Call Execution |
-| **Vector Database** | Qdrant | Dense & Hybrid Embedding Vector Storage |
-| **Relational DB** | PostgreSQL 16+, Prisma / TypeORM | System Metadata, Audit Logs, App State |
-| **LLM Inference** | Ollama, Local Models (Llama 3, Qwen, Mistral) | Air-Gapped / Privacy-Preserving Inference |
-| **Containerization** | Docker, Docker Compose, Kubernetes | Container Deployment & Service Orchestration |
-| **Testing** | Jest, Vitest, Playwright, PyTest | Unit, Integration & E2E Verification |
+| Category             | Technology                                     | Purpose                                        |
+| :------------------- | :--------------------------------------------- | :--------------------------------------------- |
+| **Frontend UI**      | Next.js 15, React 19, TypeScript, Tailwind CSS | Enterprise Admin Portal & Agent Interfaces     |
+| **Backend Core**     | NestJS, TypeScript, Node.js v20+               | API Gateway, Auth, System Services             |
+| **AI Orchestration** | LangGraph, LangChain, Python / TypeScript      | Stateful Agent Workflows & Tool Call Execution |
+| **Vector Database**  | Qdrant                                         | Dense & Hybrid Embedding Vector Storage        |
+| **Relational DB**    | PostgreSQL 16+, Prisma / TypeORM               | System Metadata, Audit Logs, App State         |
+| **LLM Inference**    | Ollama, Local Models (Llama 3, Qwen, Mistral)  | Air-Gapped / Privacy-Preserving Inference      |
+| **Containerization** | Docker, Docker Compose, Kubernetes             | Container Deployment & Service Orchestration   |
+| **Testing**          | Jest, Vitest, Playwright, PyTest               | Unit, Integration & E2E Verification           |
 
 ---
 
@@ -132,22 +133,27 @@ enterprise-ai-platform/
 ## 🚀 Development Phases
 
 ### Phase 1: Foundation & Architectural Specifications (Current Phase)
+
 - Establish repository structure, enterprise governance guidelines, and specification templates.
 - Define system architecture, data models, security boundaries, and API schemas.
 
 ### Phase 2: Core Platform & Infrastructure Setup
+
 - Provision Docker Compose environment for PostgreSQL, Qdrant, and Ollama.
 - Initialize Next.js 15 frontend shell and NestJS backend gateway with core authentication.
 
 ### Phase 3: AI Engine & RAG Pipeline Implementation
+
 - Implement document ingestion pipeline (chunking, embedding, vector indexing in Qdrant).
 - Build LangGraph stateful agent orchestrator with custom tool execution modules.
 
 ### Phase 4: Enterprise Features & Security Hardening
+
 - Implement multi-tenant data isolation and RBAC security controls.
 - Integrate audit logging, telemetry, latency tracking, and cost guardrails.
 
 ### Phase 5: Production Readiness & Scale
+
 - Execute end-to-end testing, performance benchmarking, and security penetration testing.
 - Deliver Kubernetes Helm charts and CI/CD automated deployment pipelines.
 
@@ -157,6 +163,7 @@ enterprise-ai-platform/
 
 We welcome enterprise contributors and team members to participate!
 Please refer to our detailed [CONTRIBUTING.md](CONTRIBUTING.md) guide for instructions on:
+
 - Setting up local development environments.
 - Branching conventions and pull request lifecycle.
 - Testing and quality assurance expectations.
@@ -190,6 +197,7 @@ Example:
 ## 🌿 Branch Strategy
 
 We adhere to a Git Flow / Trunk-Based hybrid branch lifecycle:
+
 - `main` — Production-grade stable releases.
 - `develop` — Active integration branch.
 - `feature/*` — Feature development branches.
@@ -201,6 +209,7 @@ We adhere to a Git Flow / Trunk-Based hybrid branch lifecycle:
 ## 📚 Documentation Index
 
 Detailed platform documentation is available in the [`docs/`](docs/) directory:
+
 - [Architecture Documentation](docs/architecture/README.md)
 - [Architectural Decision Records (ADRs)](docs/decisions/README.md)
 - [API Specifications](docs/api/README.md)

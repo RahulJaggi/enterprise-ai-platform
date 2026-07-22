@@ -1,9 +1,9 @@
 # ADR-004: AI Architecture
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: AI & Data Science Team
-* **Deciders**: Principal Architect, AI Technical Lead
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: AI & Data Science Team
+- **Deciders**: Principal Architect, AI Technical Lead
 
 ---
 
@@ -22,26 +22,26 @@ We decide to standardize our AI stack on **LangGraph & LangChain** for stateful 
 ## Alternatives Considered
 
 1. **Custom Python Agent Scripts**:
-   - *Rejected*: Lacks standardized state graph persistence, checkpointing, and human-in-the-loop validation mechanisms.
+   - _Rejected_: Lacks standardized state graph persistence, checkpointing, and human-in-the-loop validation mechanisms.
 2. **AutoGen / CrewAI**:
-   - *Rejected*: LangGraph provides superior low-level graph state control, graph cyclic routing, and enterprise checkpointing.
+   - _Rejected_: LangGraph provides superior low-level graph state control, graph cyclic routing, and enterprise checkpointing.
 3. **Cloud-Only LLMs (OpenAI/Anthropic Only)**:
-   - *Rejected*: Fails air-gapped data privacy requirements for sensitive enterprise deployment targets.
+   - _Rejected_: Fails air-gapped data privacy requirements for sensitive enterprise deployment targets.
 
 ---
 
 ## Pros
 
-* **Stateful Agent Graphs**: LangGraph supports cyclic graphs, state persistence, conditional branching, and human approval checkpoints.
-* **Hybrid Vector Retrieval**: Qdrant enables high-speed dense embedding search combined with sparse vector keyword filtering and payload tenant isolation.
-* **Privacy & Air-Gap Compliance**: Ollama enables local execution of open-weight models (Llama 3, Qwen, Mistral) without data leaving the enterprise network boundary.
+- **Stateful Agent Graphs**: LangGraph supports cyclic graphs, state persistence, conditional branching, and human approval checkpoints.
+- **Hybrid Vector Retrieval**: Qdrant enables high-speed dense embedding search combined with sparse vector keyword filtering and payload tenant isolation.
+- **Privacy & Air-Gap Compliance**: Ollama enables local execution of open-weight models (Llama 3, Qwen, Mistral) without data leaving the enterprise network boundary.
 
 ---
 
 ## Cons
 
-* Rapid evolution of AI framework APIs requires strict dependency version pinning.
-* High memory and GPU/CPU resource overhead during local model execution.
+- Rapid evolution of AI framework APIs requires strict dependency version pinning.
+- High memory and GPU/CPU resource overhead during local model execution.
 
 ---
 

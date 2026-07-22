@@ -1,9 +1,9 @@
 # ADR-007: Security Standards
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Information Security & Platform Security Team
-* **Deciders**: Chief Information Security Officer (CISO), Principal Architect
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Information Security & Platform Security Team
+- **Deciders**: Chief Information Security Officer (CISO), Principal Architect
 
 ---
 
@@ -27,24 +27,24 @@ We decide to implement an **Enterprise Zero Trust Security Model**:
 ## Alternatives Considered
 
 1. **Single-Tenant Deployment per Customer**:
-   - *Rejected*: Excessively high operational cost and infrastructure duplication for enterprise SaaS offerings.
+   - _Rejected_: Excessively high operational cost and infrastructure duplication for enterprise SaaS offerings.
 2. **Per-Customer Separate Vector Database Instances**:
-   - *Rejected*: Payload-based tenant filtering in Qdrant achieves equivalent cryptographic and logical isolation at significantly lower operational overhead.
+   - _Rejected_: Payload-based tenant filtering in Qdrant achieves equivalent cryptographic and logical isolation at significantly lower operational overhead.
 
 ---
 
 ## Pros
 
-* **Defense in Depth**: Security enforced at API Gateway, microservice boundary, database tier, and LLM prompt layer.
-* **Compliance Readiness**: Audit telemetry records all security events, user logins, and data access requests.
-* **Protection against OWASP Top 10 for LLMs**: Defends against prompt injection, data poisoning, and sensitive information disclosure.
+- **Defense in Depth**: Security enforced at API Gateway, microservice boundary, database tier, and LLM prompt layer.
+- **Compliance Readiness**: Audit telemetry records all security events, user logins, and data access requests.
+- **Protection against OWASP Top 10 for LLMs**: Defends against prompt injection, data poisoning, and sensitive information disclosure.
 
 ---
 
 ## Cons
 
-* Slight performance latency overhead from prompt guardrail validation and token inspection.
-* Increased development rigor required when writing database queries to guarantee tenant context propagation.
+- Slight performance latency overhead from prompt guardrail validation and token inspection.
+- Increased development rigor required when writing database queries to guarantee tenant context propagation.
 
 ---
 

@@ -1,9 +1,9 @@
 # ADR-008: Testing Strategy
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Quality Assurance & Platform Engineering Team
-* **Deciders**: Principal Architect, QA Lead
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Quality Assurance & Platform Engineering Team
+- **Deciders**: Principal Architect, QA Lead
 
 ---
 
@@ -27,24 +27,24 @@ We decide to enforce a **4-Tier Testing Strategy**:
 ## Alternatives Considered
 
 1. **Unit Testing Only**:
-   - *Rejected*: Insufficient for catching integration failures between API Gateways, vector databases, and LLM agent runtimes.
+   - _Rejected_: Insufficient for catching integration failures between API Gateways, vector databases, and LLM agent runtimes.
 2. **Cypress instead of Playwright**:
-   - *Rejected*: Playwright provides superior multi-browser support, speed, native TypeScript integration, and headless performance in CI environments.
+   - _Rejected_: Playwright provides superior multi-browser support, speed, native TypeScript integration, and headless performance in CI environments.
 
 ---
 
 ## Pros
 
-* **Comprehensive Test Coverage**: High confidence when deploying code changes to production environments.
-* **Deterministic RAG Benchmark Scoring**: Prevents retrieval quality degradation when tuning chunking strategies or embedding models.
-* **Automated E2E Verification**: Ensures critical user flows (login, agent execution, document ingestion) remain functional.
+- **Comprehensive Test Coverage**: High confidence when deploying code changes to production environments.
+- **Deterministic RAG Benchmark Scoring**: Prevents retrieval quality degradation when tuning chunking strategies or embedding models.
+- **Automated E2E Verification**: Ensures critical user flows (login, agent execution, document ingestion) remain functional.
 
 ---
 
 ## Cons
 
-* Longer total CI build execution time.
-* Requires maintenance of test database fixtures and mock LLM response providers.
+- Longer total CI build execution time.
+- Requires maintenance of test database fixtures and mock LLM response providers.
 
 ---
 

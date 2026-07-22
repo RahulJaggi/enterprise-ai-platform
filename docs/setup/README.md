@@ -45,6 +45,7 @@ pnpm dev
 ## 🧪 Verification
 
 Verify your environment configuration once services are launched:
+
 - Backend Health Endpoint: `http://localhost:4000/api/v1/health`
 - Qdrant Vector Dashboard: `http://localhost:6333/dashboard`
 - Next.js Web UI: `http://localhost:3000`

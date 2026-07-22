@@ -51,7 +51,7 @@ sequenceDiagram
     Graph->>Checkpoint: Save Initial State (State ID: #101)
     Graph->>Graph: Planner Node: Determine Required Tools
     Graph->>Graph: Decision: Requires High-Risk Tool "ExecuteSQL"
-    
+
     rect rgb(255, 235, 235)
         note over Graph, Human: Human-in-the-Loop Interrupt
         Graph->>Checkpoint: Save Interrupted State (#101, Status: Pending Approval)

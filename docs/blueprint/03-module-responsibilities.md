@@ -30,18 +30,22 @@ The system is decomposed into discrete feature modules following Clean Architect
 ## Responsibilities
 
 ### 1. Auth & Identity Module (`AuthModule`)
+
 - Handles user registration, login, JWT token issuance, and password hashing.
 - Enforces Role-Based Access Control (RBAC) and tenant context extraction (`tenantId`).
 
 ### 2. Agent Management Module (`AgentModule`)
+
 - Manages agent CRUD operations, prompt templates, tool registrations, and agent execution parameters.
 - Dispatches agent run requests to the `@enterprise-ai/ai` engine.
 
 ### 3. RAG & Knowledge Base Module (`KnowledgeModule`)
+
 - Handles document ingestion (PDF, DOCX, TXT), text chunking strategies, embedding generation, and vector indexing in Qdrant.
 - Performs hybrid semantic search against Qdrant collections.
 
 ### 4. System Telemetry & Audit Module (`AuditModule`)
+
 - Logs immutable security audit events (logins, role changes, data exports).
 - Tracks LLM token usage metrics, latency, and estimated costs per tenant.
 

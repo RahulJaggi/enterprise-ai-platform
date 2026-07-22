@@ -1,9 +1,9 @@
 # ADR-009: Deployment Strategy
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: DevOps & Infrastructure Team
-* **Deciders**: Principal Architect, DevOps Lead
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: DevOps & Infrastructure Team
+- **Deciders**: Principal Architect, DevOps Lead
 
 ---
 
@@ -26,24 +26,24 @@ We decide to standardize our infrastructure deployment pipeline around **Contain
 ## Alternatives Considered
 
 1. **Serverless Functions (AWS Lambda / Vercel Only)**:
-   - *Rejected*: Serverless execution time limits and cold start latencies conflict with long-running LLM agent graph executions and local on-premise air-gap requirements.
+   - _Rejected_: Serverless execution time limits and cold start latencies conflict with long-running LLM agent graph executions and local on-premise air-gap requirements.
 2. **Virtual Machine (VM) Direct Deployments**:
-   - *Rejected*: Higher operational friction, dependency drift, and slower scaling compared to containerized orchestration.
+   - _Rejected_: Higher operational friction, dependency drift, and slower scaling compared to containerized orchestration.
 
 ---
 
 ## Pros
 
-* **Universal Portability**: Identical containerized behavior across local laptop, hybrid cloud, and air-gapped enterprise environments.
-* **Declarative Auto-Scaling**: Kubernetes Horizontal Pod Autoscaling (HPA) scales backend microservices and AI engine pods dynamically based on load.
-* **Zero Downtime Updates**: Rolling deployment strategies with readiness and liveness probes.
+- **Universal Portability**: Identical containerized behavior across local laptop, hybrid cloud, and air-gapped enterprise environments.
+- **Declarative Auto-Scaling**: Kubernetes Horizontal Pod Autoscaling (HPA) scales backend microservices and AI engine pods dynamically based on load.
+- **Zero Downtime Updates**: Rolling deployment strategies with readiness and liveness probes.
 
 ---
 
 ## Cons
 
-* Kubernetes cluster setup and operational maintenance overhead.
-* Resource requirements for running full containerized stacks during local development.
+- Kubernetes cluster setup and operational maintenance overhead.
+- Resource requirements for running full containerized stacks during local development.
 
 ---
 

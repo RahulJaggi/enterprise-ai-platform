@@ -1,9 +1,9 @@
 # ADR-002: Frontend Architecture
 
-* **Status**: Accepted
-* **Date**: 2026-07-22
-* **Authors**: Frontend Architecture Team
-* **Deciders**: Principal Architect, Frontend Lead
+- **Status**: Accepted
+- **Date**: 2026-07-22
+- **Authors**: Frontend Architecture Team
+- **Deciders**: Principal Architect, Frontend Lead
 
 ---
 
@@ -22,27 +22,27 @@ We decide to standardize the web portal (`apps/web`) on **Next.js 15 (App Router
 ## Alternatives Considered
 
 1. **Single Page Application (Vite + React SPA)**:
-   - *Rejected*: Lacks built-in Server-Side Rendering (SSR), native API route integration, and optimized Server Components for administrative content.
+   - _Rejected_: Lacks built-in Server-Side Rendering (SSR), native API route integration, and optimized Server Components for administrative content.
 2. **Remix / React Router v7**:
-   - *Rejected*: Next.js 15 provides stronger enterprise ecosystem alignment, broader middleware support, and native React Server Components integration.
+   - _Rejected_: Next.js 15 provides stronger enterprise ecosystem alignment, broader middleware support, and native React Server Components integration.
 3. **Angular / Vue**:
-   - *Rejected*: Team expertise and existing ecosystem of AI React UI component primitives favor React 19.
+   - _Rejected_: Team expertise and existing ecosystem of AI React UI component primitives favor React 19.
 
 ---
 
 ## Pros
 
-* **React Server Components (RSC)**: Reduces client-side JavaScript bundle sizes by rendering non-interactive pages on the server.
-* **Real-Time Streaming**: Native support for readable streams, WebSockets, and SSE for streaming LLM responses.
-* **Type-Safe Integration**: Direct consumption of shared DTOs from `@enterprise-ai/types` and components from `@enterprise-ai/ui`.
-* **SEO & Accessibility**: Built-in routing, metadata management, and server-side rendering for administrative portals.
+- **React Server Components (RSC)**: Reduces client-side JavaScript bundle sizes by rendering non-interactive pages on the server.
+- **Real-Time Streaming**: Native support for readable streams, WebSockets, and SSE for streaming LLM responses.
+- **Type-Safe Integration**: Direct consumption of shared DTOs from `@enterprise-ai/types` and components from `@enterprise-ai/ui`.
+- **SEO & Accessibility**: Built-in routing, metadata management, and server-side rendering for administrative portals.
 
 ---
 
 ## Cons
 
-* Learning curve associated with Server Components vs Client Components boundaries (`"use client"`).
-* Potential hydration mismatches if server and client state differ during dynamic rendering.
+- Learning curve associated with Server Components vs Client Components boundaries (`"use client"`).
+- Potential hydration mismatches if server and client state differ during dynamic rendering.
 
 ---
 

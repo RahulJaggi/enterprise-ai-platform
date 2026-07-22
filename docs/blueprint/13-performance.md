@@ -33,12 +33,12 @@ Performance optimization targets all layers of the stack:
 
 ## Performance SLA Targets
 
-| Operation | Target Latency (p95) | Target Throughput |
-| :--- | :--- | :--- |
-| API Gateway Authentication | `< 15 ms` | 5,000 req/sec |
-| Qdrant Vector Search | `< 45 ms` | 1,200 req/sec |
-| First Token Latency (TTFT) | `< 400 ms` | 100 concurrent streams |
-| Database Metadata Read | `< 10 ms` | 10,000 req/sec |
+| Operation                  | Target Latency (p95) | Target Throughput      |
+| :------------------------- | :------------------- | :--------------------- |
+| API Gateway Authentication | `< 15 ms`            | 5,000 req/sec          |
+| Qdrant Vector Search       | `< 45 ms`            | 1,200 req/sec          |
+| First Token Latency (TTFT) | `< 400 ms`           | 100 concurrent streams |
+| Database Metadata Read     | `< 10 ms`            | 10,000 req/sec         |
 
 ---
 
