@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
 import {
   AI_PROVIDER_TOKEN,
   IAiProvider,
@@ -6,6 +6,7 @@ import {
 } from '../../providers/ollama/ollama.interface';
 import { PromptService } from './prompts/prompt.service';
 import { MemoryService } from './memory/memory.service';
+import { MemoryConversation } from './memory/models/conversation';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDataDto } from './dto/chat-response.dto';
 
@@ -115,5 +116,23 @@ export class AiService {
         timestamp: new Date().toISOString(),
       });
     }
+  }
+
+  async getConversation(conversationId: string): Promise<MemoryConversation> {
+    const conversation = await this.memoryService.getConversation(conversationId);
+    if (!conversation) {
+      throw new NotFoundException(`Conversation [ID: ${conversationId}] not found in memory`);
+    }
+    return conversation;
+  }
+
+  async clearConversation(
+    conversationId: string,
+  ): Promise<{ cleared: boolean; conversationId: string }> {
+    const cleared = await this.memoryService.clearConversation(conversationId);
+    if (!cleared) {
+      throw new NotFoundException(`Conversation [ID: ${conversationId}] not found in memory`);
+    }
+    return { cleared: true, conversationId };
   }
 }

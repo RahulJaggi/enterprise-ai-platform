@@ -1,9 +1,22 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Req, Res, Logger } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  Req,
+  Res,
+  Logger,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AiService } from './ai.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDataDto } from './dto/chat-response.dto';
+import { MemoryConversation } from './memory/models/conversation';
 import { ApiResponseEnvelope } from '../../common/interfaces/api-response.interface';
 
 @ApiTags('AI')
@@ -103,5 +116,63 @@ export class AiController {
         res.end();
       }
     }
+  }
+
+  @Get('chat/:conversationId')
+  @ApiOperation({
+    summary: 'Get Conversation History by Conversation ID',
+    description: 'Retrieves all dialogue messages recorded in memory for a given conversation ID.',
+  })
+  @ApiParam({ name: 'conversationId', description: 'Target conversation ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Conversation history retrieved successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Conversation ID not found in memory',
+  })
+  async getConversation(
+    @Param('conversationId') conversationId: string,
+  ): Promise<ApiResponseEnvelope<MemoryConversation>> {
+    const data = await this.aiService.getConversation(conversationId);
+
+    return {
+      success: true,
+      data,
+      error: null,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Delete('chat/:conversationId')
+  @ApiOperation({
+    summary: 'Delete Conversation Memory',
+    description:
+      'Clears and deletes all message history recorded in memory for a given conversation ID.',
+  })
+  @ApiParam({
+    name: 'conversationId',
+    description: 'Target conversation ID to delete',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Conversation memory cleared successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Conversation ID not found in memory',
+  })
+  async clearConversation(
+    @Param('conversationId') conversationId: string,
+  ): Promise<ApiResponseEnvelope<{ cleared: boolean; conversationId: string }>> {
+    const data = await this.aiService.clearConversation(conversationId);
+
+    return {
+      success: true,
+      data,
+      error: null,
+      timestamp: new Date().toISOString(),
+    };
   }
 }
