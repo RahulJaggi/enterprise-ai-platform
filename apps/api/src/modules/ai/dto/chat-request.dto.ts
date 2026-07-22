@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ChatRequestDto {
   @ApiProperty({
@@ -12,4 +12,13 @@ export class ChatRequestDto {
   @IsNotEmpty()
   @MaxLength(4000)
   message!: string;
+
+  @ApiProperty({
+    example: 'conv_8f9a2b1c3d4e5f6a',
+    description: 'Optional conversation ID. If omitted, a new conversation context is created.',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  conversationId?: string;
 }

@@ -23,10 +23,10 @@ export class PromptService implements IPromptService {
     const template = this.templates.get(templateType) || this.templates.get('default')!;
 
     this.logger.debug(
-      `Building prompt using template [${templateType}], HasContext: ${Boolean(options.context)}, HasSystemOverride: ${Boolean(options.systemPromptOverride)}`,
+      `Building prompt using template [${templateType}], HasContext: ${Boolean(options.context)}, HistoryLength: ${options.history?.length ?? 0}`,
     );
 
-    const formatted = template.format(options.userPrompt, options.context);
+    const formatted = template.format(options.userPrompt, options.context, options.history);
 
     if (options.systemPromptOverride && options.systemPromptOverride.trim().length > 0) {
       formatted.systemPrompt = options.systemPromptOverride.trim();

@@ -7,6 +7,7 @@ export interface StreamEventData {
   data: {
     token?: string;
     model?: string;
+    conversationId?: string;
     durationMs?: number;
     totalTokens?: number;
     error?: string;
