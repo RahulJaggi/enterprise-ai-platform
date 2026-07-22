@@ -48,12 +48,18 @@ export class VectorService {
     this.documentTracker.add(dto.filename);
     this.lastIndexedIsoTime = new Date().toISOString();
 
-    return {
-      collectionName: result.collectionName,
-      vectorCount: result.vectorCount,
-      indexedCount: result.indexedCount,
-      status: result.status,
+    const responseDto: VectorIndexingResponseDataDto = {
+      collectionName: result?.collectionName || collectionName,
+      vectorCount: typeof result?.vectorCount === 'number' ? result.vectorCount : points.length,
+      indexedCount: typeof result?.indexedCount === 'number' ? result.indexedCount : points.length,
+      status: result?.status || 'indexed',
     };
+
+    this.logger.log(
+      `Successfully indexed ${responseDto.indexedCount} vectors into Qdrant collection [${responseDto.collectionName}]`,
+    );
+
+    return responseDto;
   }
 
   async getStatus(collectionNameParam?: string): Promise<VectorCollectionStatusDto> {
@@ -62,8 +68,8 @@ export class VectorService {
 
     return {
       collectionName,
-      status: info.status,
-      vectorCount: info.vectorsCount,
+      status: info.status || 'active',
+      vectorCount: typeof info.vectorsCount === 'number' ? info.vectorsCount : 0,
       documentsIndexed: this.documentTracker.size || (info.vectorsCount > 0 ? 1 : 0),
       lastIndexedTime: this.lastIndexedIsoTime,
     };

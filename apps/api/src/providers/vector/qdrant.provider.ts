@@ -167,11 +167,19 @@ export class QdrantProvider implements IVectorProvider {
 
       this.logger.log(`Number of vectors inserted: ${validPoints.length}`);
 
-      const info = await this.getCollectionInfo(collectionName);
+      let totalVectors = validPoints.length;
+      try {
+        const info = await this.getCollectionInfo(collectionName);
+        if (typeof info.vectorsCount === 'number' && info.vectorsCount >= 0) {
+          totalVectors = info.vectorsCount;
+        }
+      } catch (err: unknown) {
+        this.logger.warn(`Failed to retrieve post-index collection info: ${err}`);
+      }
 
       return {
-        collectionName,
-        vectorCount: info.vectorsCount,
+        collectionName: collectionName || this.defaultCollectionName,
+        vectorCount: totalVectors,
         indexedCount: validPoints.length,
         status: 'indexed',
       };
@@ -211,11 +219,18 @@ export class QdrantProvider implements IVectorProvider {
       const data = (await response.json()) as QdrantCollectionResponse;
       const res = data.result || {};
 
+      const count =
+        typeof res.vectors_count === 'number'
+          ? res.vectors_count
+          : typeof res.points_count === 'number'
+            ? res.points_count
+            : 0;
+
       return {
         collectionName,
         status: res.status || 'active',
-        vectorsCount: res.vectors_count || res.points_count || 0,
-        pointsCount: res.points_count || 0,
+        vectorsCount: count,
+        pointsCount: count,
       };
     } catch {
       return {
