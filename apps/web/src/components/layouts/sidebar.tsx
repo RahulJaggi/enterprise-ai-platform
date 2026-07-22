@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/use-app-store';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Bot, Database, Settings, Shield } from 'lucide-react';
+import { LayoutDashboard, Bot, Database, Settings, Shield, Sparkles } from 'lucide-react';
 
 const navigationItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'AI Playground', href: '/ai', icon: Sparkles },
   { name: 'AI Agents', href: '/agents', icon: Bot, disabled: true },
   { name: 'Knowledge Base', href: '/knowledge', icon: Database, disabled: true },
   { name: 'Security & Audit', href: '/security', icon: Shield, disabled: true },
