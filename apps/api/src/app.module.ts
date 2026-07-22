@@ -6,6 +6,7 @@ import { HealthModule } from './modules/health/health.module';
 import { AiModule } from './modules/ai/ai.module';
 import { DocumentModule } from './modules/documents/document.module';
 import { ChunkModule } from './modules/chunks/chunk.module';
+import { EmbeddingModule } from './modules/embeddings/embedding.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChunkModule } from './modules/chunks/chunk.module';
     AiModule,
     DocumentModule,
     ChunkModule,
+    EmbeddingModule,
   ],
 })
 export class AppModule implements NestModule {

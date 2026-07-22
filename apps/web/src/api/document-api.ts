@@ -41,6 +41,27 @@ export interface ChunkApiResponse {
   timestamp: string;
 }
 
+export interface ChunkEmbeddingResult {
+  chunkId: string;
+  embeddingDimension: number;
+  generationTimeMs: number;
+  status: 'generated' | 'failed';
+}
+
+export interface EmbeddingApiResponse {
+  success: boolean;
+  data: {
+    totalChunks: number;
+    embeddingModel: string;
+    results: ChunkEmbeddingResult[];
+  } | null;
+  error: {
+    code: string;
+    message: string;
+  } | null;
+  timestamp: string;
+}
+
 export async function uploadDocumentApi(
   file: File,
   onProgress?: (progress: number) => void,
@@ -80,6 +101,19 @@ export async function processChunkingApi(payload: {
 
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error?.message || 'Failed to process document chunking');
+  }
+
+  return response.data.data;
+}
+
+export async function generateEmbeddingsApi(payload: {
+  chunks: { chunkId: string; content: string }[];
+  model?: string;
+}): Promise<EmbeddingApiResponse['data']> {
+  const response = await apiClient.post<EmbeddingApiResponse>('/api/v1/documents/embed', payload);
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.error?.message || 'Failed to generate embeddings');
   }
 
   return response.data.data;

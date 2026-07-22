@@ -12,12 +12,18 @@ import {
   Scissors,
   Layers,
   Sparkles,
+  Cpu,
+  Clock,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 import {
   uploadDocumentApi,
   processChunkingApi,
+  generateEmbeddingsApi,
   ExtractedDocumentData,
   DocumentChunk,
+  ChunkEmbeddingResult,
 } from '@/api/document-api';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -33,12 +39,17 @@ export function KnowledgePage() {
   const [overlap, setOverlap] = useState<number>(200);
   const [chunks, setChunks] = useState<DocumentChunk[]>([]);
 
+  // Embedding map state: chunkId -> ChunkEmbeddingResult
+  const [embeddingMap, setEmbeddingMap] = useState<Map<string, ChunkEmbeddingResult>>(new Map());
+
   const uploadMutation = useMutation({
     mutationFn: (file: File) => uploadDocumentApi(file, setUploadProgress),
     onSuccess: (data) => {
       setExtractedDoc(data);
       setUploadProgress(0);
       setChunks([]);
+      setEmbeddingMap(new Map());
+
       // Auto-trigger chunking on upload success
       chunkMutation.mutate({
         text: data.text,
@@ -56,6 +67,26 @@ export function KnowledgePage() {
     onSuccess: (data) => {
       if (data?.chunks) {
         setChunks(data.chunks);
+        setEmbeddingMap(new Map());
+
+        // Auto-generate embeddings for chunks
+        embeddingMutation.mutate({
+          chunks: data.chunks.map((c) => ({
+            chunkId: c.chunkId,
+            content: c.content,
+          })),
+        });
+      }
+    },
+  });
+
+  const embeddingMutation = useMutation({
+    mutationFn: generateEmbeddingsApi,
+    onSuccess: (data) => {
+      if (data?.results) {
+        const newMap = new Map<string, ChunkEmbeddingResult>();
+        data.results.forEach((r) => newMap.set(r.chunkId, r));
+        setEmbeddingMap(newMap);
       }
     },
   });
@@ -100,20 +131,30 @@ export function KnowledgePage() {
     });
   };
 
+  const handleGenerateEmbeddings = () => {
+    if (chunks.length === 0) return;
+    embeddingMutation.mutate({
+      chunks: chunks.map((c) => ({
+        chunkId: c.chunkId,
+        content: c.content,
+      })),
+    });
+  };
+
   return (
     <div className="flex h-[calc(100vh-4rem)] w-full flex-col overflow-y-auto p-6 space-y-6 bg-background">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Knowledge Base & Chunking Engine
+          Knowledge Base & Embedding Pipeline
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload PDF documents, extract raw text, and segment text into fixed-size overlapping
-          chunks.
+          Upload PDF documents, extract raw text, segment into chunks, and generate dense vector
+          embeddings.
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column: Upload & Config Controls */}
+        {/* Left Column: Controls & Metadata */}
         <div className="space-y-4">
           <Card className="p-6">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
@@ -173,7 +214,7 @@ export function KnowledgePage() {
             <Card className="p-6 space-y-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Scissors className="h-4 w-4 text-amber-500" />
-                <span>Chunking Configuration</span>
+                <span>Chunking & Embedding Settings</span>
               </h3>
 
               <div className="space-y-3 text-xs">
@@ -209,29 +250,41 @@ export function KnowledgePage() {
                   />
                 </div>
 
-                <Button
-                  onClick={handleProcessChunking}
-                  disabled={chunkMutation.isPending}
-                  className="w-full mt-2 h-9 text-xs font-medium gap-1.5 shadow-xs"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>{chunkMutation.isPending ? 'Processing...' : 'Re-chunk Document'}</span>
-                </Button>
+                <div className="pt-1 flex gap-2">
+                  <Button
+                    onClick={handleProcessChunking}
+                    disabled={chunkMutation.isPending}
+                    variant="outline"
+                    className="flex-1 h-8 text-xs font-medium gap-1"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    <span>Re-chunk</span>
+                  </Button>
+
+                  <Button
+                    onClick={handleGenerateEmbeddings}
+                    disabled={embeddingMutation.isPending || chunks.length === 0}
+                    className="flex-1 h-8 text-xs font-medium gap-1 shadow-xs"
+                  >
+                    <Cpu className="h-3 w-3" />
+                    <span>{embeddingMutation.isPending ? 'Embedding...' : 'Generate Vectors'}</span>
+                  </Button>
+                </div>
               </div>
             </Card>
           )}
 
-          {/* Metadata Card */}
+          {/* Metadata Summary Card */}
           {extractedDoc && (
             <Card className="p-6 space-y-3 text-xs">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileCheck2 className="h-4 w-4 text-emerald-500" />
-                <span>Document Summary</span>
+                <span>Pipeline Summary</span>
               </h3>
 
               <div className="flex items-center justify-between border-b border-border/50 pb-2">
                 <span className="text-muted-foreground">Filename</span>
-                <span className="font-mono font-medium text-foreground truncate max-w-[150px]">
+                <span className="font-mono font-medium text-foreground truncate max-w-[140px]">
                   {extractedDoc.filename}
                 </span>
               </div>
@@ -256,24 +309,34 @@ export function KnowledgePage() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-border/50 pb-2">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <Layers className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Generated Chunks</span>
+                  <span>Chunks</span>
                 </span>
                 <span className="font-bold text-emerald-500">{chunks.length} chunks</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground flex items-center gap-1.5">
+                  <Cpu className="h-3.5 w-3.5 text-purple-500" />
+                  <span>Embeddings Generated</span>
+                </span>
+                <span className="font-bold text-purple-500">
+                  {embeddingMap.size} / {chunks.length}
+                </span>
               </div>
             </Card>
           )}
         </div>
 
-        {/* Right Column: Chunks & Text Flow View */}
+        {/* Right Column: Chunks & Embeddings List */}
         <div className="lg:col-span-2 space-y-4">
           <Card className="flex flex-col p-6 min-h-[540px]">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
                 <Layers className="h-4 w-4 text-primary" />
-                <span>Document Chunks ({chunks.length})</span>
+                <span>Chunks & Embedding Vectors ({chunks.length})</span>
               </div>
 
               {extractedDoc && (
@@ -304,45 +367,84 @@ export function KnowledgePage() {
                   <FileText className="h-10 w-10 opacity-30 mb-2" />
                   <p className="font-medium text-foreground">No document uploaded yet</p>
                   <p className="mt-1 text-muted-foreground">
-                    Upload a PDF to view extracted document chunks and metadata.
+                    Upload a PDF to view extracted document chunks and vector embeddings.
                   </p>
                 </div>
               ) : chunks.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center text-xs text-muted-foreground py-20">
                   <Scissors className="h-8 w-8 text-amber-500/60 animate-pulse mb-2" />
-                  <p>Processing chunks...</p>
+                  <p>Processing document chunks...</p>
                 </div>
               ) : (
-                chunks.map((chunk) => (
-                  <div
-                    key={chunk.chunkId}
-                    className="rounded-xl border border-border/80 bg-card/60 p-4 space-y-2 shadow-2xs hover:border-primary/40 transition-colors"
-                  >
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-primary/10 px-2 py-0.5 font-bold text-primary border border-primary/20">
-                          Chunk #{chunk.index + 1}
-                        </span>
-                        <span className="font-mono text-[11px] text-muted-foreground">
-                          ID: {chunk.chunkId}
-                        </span>
+                chunks.map((chunk) => {
+                  const emb = embeddingMap.get(chunk.chunkId);
+
+                  return (
+                    <div
+                      key={chunk.chunkId}
+                      className="rounded-xl border border-border/80 bg-card/60 p-4 space-y-3 shadow-2xs hover:border-primary/40 transition-colors"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-md bg-primary/10 px-2 py-0.5 font-bold text-primary border border-primary/20">
+                            Chunk #{chunk.index + 1}
+                          </span>
+                          <span className="font-mono text-[11px] text-muted-foreground">
+                            ID: {chunk.chunkId}
+                          </span>
+                        </div>
+
+                        {/* Embedding Status Badge */}
+                        <div className="flex items-center gap-2">
+                          {embeddingMutation.isPending && !emb ? (
+                            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-medium text-amber-500 border border-amber-500/20">
+                              <Cpu className="h-3 w-3 animate-spin" />
+                              <span>Embedding...</span>
+                            </span>
+                          ) : emb?.status === 'generated' ? (
+                            <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-500 border border-emerald-500/20">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span>Vector Generated</span>
+                            </span>
+                          ) : emb?.status === 'failed' ? (
+                            <span className="flex items-center gap-1.5 rounded-full bg-destructive/10 px-2.5 py-0.5 text-[11px] font-medium text-destructive border border-destructive/20">
+                              <XCircle className="h-3 w-3" />
+                              <span>Failed</span>
+                            </span>
+                          ) : (
+                            <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                              Pending
+                            </span>
+                          )}
+
+                          <span className="font-medium text-foreground text-[11px]">
+                            {chunk.characterCount} chars
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          {chunk.characterCount} chars
-                        </span>
-                        <span className="font-mono opacity-80">
-                          Offsets: [{chunk.startOffset} - {chunk.endOffset}]
-                        </span>
+                      {/* Vector Attributes Row */}
+                      {emb && emb.status === 'generated' && (
+                        <div className="flex items-center gap-4 rounded-lg bg-accent/40 px-3 py-1.5 text-[11px] font-mono text-muted-foreground border border-border/40">
+                          <div className="flex items-center gap-1 text-purple-400 font-semibold">
+                            <Cpu className="h-3 w-3" />
+                            <span>Dimension: {emb.embeddingDimension}d</span>
+                          </div>
+
+                          <div className="flex items-center gap-1 text-emerald-400 font-semibold">
+                            <Clock className="h-3 w-3" />
+                            <span>Time: {emb.generationTimeMs}ms</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Content Preview Box */}
+                      <div className="rounded-lg bg-background p-3 border border-border/40 font-mono text-xs text-foreground leading-relaxed whitespace-pre-wrap">
+                        {chunk.content}
                       </div>
                     </div>
-
-                    <div className="rounded-lg bg-background p-3 border border-border/40 font-mono text-xs text-foreground leading-relaxed whitespace-pre-wrap">
-                      {chunk.content}
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </Card>
