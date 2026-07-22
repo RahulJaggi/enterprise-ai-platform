@@ -24,9 +24,24 @@ export interface CollectionInfo {
   pointsCount: number;
 }
 
+export interface VectorSearchResult {
+  score: number;
+  chunkId: string;
+  documentId: string;
+  filename: string;
+  pageNumber: number;
+  chunkIndex: number;
+  content: string;
+}
+
 export interface IVectorProvider {
   readonly providerName: string;
   ensureCollection(collectionName: string, vectorSize: number): Promise<void>;
   upsertVectors(collectionName: string, points: VectorPoint[]): Promise<IndexingResult>;
   getCollectionInfo(collectionName: string): Promise<CollectionInfo>;
+  searchVectors(
+    collectionName: string,
+    queryEmbedding: number[],
+    limit: number,
+  ): Promise<VectorSearchResult[]>;
 }

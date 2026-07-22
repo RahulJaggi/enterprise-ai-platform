@@ -3,6 +3,7 @@ import { RootLayout } from '@/components/layouts/root-layout';
 import { DashboardPage } from '@/pages/dashboard/dashboard-page';
 import { AiPlaygroundPage } from '@/pages/ai/ai-playground-page';
 import { KnowledgePage } from '@/pages/knowledge/knowledge-page';
+import { KnowledgeSearchPage } from '@/pages/search/knowledge-search-page';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: 'knowledge',
         element: <KnowledgePage />,
+      },
+      {
+        path: 'search',
+        element: <KnowledgeSearchPage />,
       },
     ],
   },

@@ -11,6 +11,7 @@ import {
   VectorPoint,
   IndexingResult,
   CollectionInfo,
+  VectorSearchResult,
 } from './vector-provider.interface';
 
 interface QdrantCollectionResponse {
@@ -19,6 +20,24 @@ interface QdrantCollectionResponse {
     vectors_count?: number;
     points_count?: number;
   };
+  status?: string;
+}
+
+interface QdrantSearchHit {
+  id?: string;
+  score?: number;
+  payload?: {
+    documentId?: string;
+    chunkId?: string;
+    filename?: string;
+    pageNumber?: number;
+    chunkIndex?: number;
+    content?: string;
+  };
+}
+
+interface QdrantSearchApiResponse {
+  result?: QdrantSearchHit[];
   status?: string;
 }
 
@@ -40,9 +59,7 @@ export class QdrantProvider implements IVectorProvider {
       'QDRANT_COLLECTION_NAME',
       'enterprise_knowledge',
     );
-    // Increased timeout to 60 seconds for large batch vector indexing
     this.timeoutMs = this.configService.get<number>('QDRANT_TIMEOUT_MS', 60000);
-    // Configurable Qdrant batch size for payload scalability
     this.batchSize = this.configService.get<number>('QDRANT_BATCH_SIZE', 50);
   }
 
@@ -119,7 +136,6 @@ export class QdrantProvider implements IVectorProvider {
     const stageStartTime = Date.now();
     const collectionName = collectionNameParam || this.defaultCollectionName;
 
-    // Filter out points without valid non-empty embeddings
     const validPoints = points.filter((p) => Array.isArray(p.embedding) && p.embedding.length > 0);
 
     const firstPoint = validPoints[0];
@@ -264,6 +280,66 @@ export class QdrantProvider implements IVectorProvider {
         vectorsCount: 0,
         pointsCount: 0,
       };
+    }
+  }
+
+  async searchVectors(
+    collectionNameParam: string | undefined,
+    queryEmbedding: number[],
+    limit = 5,
+  ): Promise<VectorSearchResult[]> {
+    const collectionName = collectionNameParam || this.defaultCollectionName;
+    const endpoint = `${this.baseUrl}/collections/${collectionName}/points/search`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          vector: queryEmbedding,
+          limit,
+          with_payload: true,
+        }),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          this.logger.warn(
+            `Qdrant collection [${collectionName}] missing during vector search. Returning empty result set.`,
+          );
+          return [];
+        }
+        const errorText = await response.text();
+        this.logger.error(`Qdrant search error: ${errorText}`);
+        throw new InternalServerErrorException(`Qdrant semantic search failed: ${errorText}`);
+      }
+
+      const data = (await response.json()) as QdrantSearchApiResponse;
+      const hits = data.result || [];
+
+      return hits.map((hit) => {
+        const payload = hit.payload || {};
+        return {
+          score: hit.score || 0,
+          chunkId: payload.chunkId || hit.id || '',
+          documentId: payload.documentId || `doc_${payload.filename || 'unknown'}`,
+          filename: payload.filename || 'unknown.pdf',
+          pageNumber: typeof payload.pageNumber === 'number' ? payload.pageNumber : 1,
+          chunkIndex: typeof payload.chunkIndex === 'number' ? payload.chunkIndex : 0,
+          content: payload.content || '',
+        };
+      });
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        (error.message.includes('ECONNREFUSED') || error.message.includes('fetch failed'))
+      ) {
+        throw new ServiceUnavailableException(
+          `Qdrant vector database unreachable at ${this.baseUrl}`,
+        );
+      }
+      throw error;
     }
   }
 }
