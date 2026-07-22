@@ -5,6 +5,7 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
 import { HealthModule } from './modules/health/health.module';
 import { AiModule } from './modules/ai/ai.module';
 import { DocumentModule } from './modules/documents/document.module';
+import { ChunkModule } from './modules/chunks/chunk.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DocumentModule } from './modules/documents/document.module';
     HealthModule,
     AiModule,
     DocumentModule,
+    ChunkModule,
   ],
 })
 export class AppModule implements NestModule {
