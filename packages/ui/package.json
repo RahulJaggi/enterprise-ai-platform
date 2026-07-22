@@ -1,0 +1,11 @@
+{
+  "name": "@enterprise-ai/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Enterprise AI Platform Shared UI Component Library",
+  "scripts": {
+    "build": "echo \"[ui] Build script placeholder.\"",
+    "lint": "echo \"[ui] Lint script placeholder.\"",
+    "type-check": "echo \"[ui] Type-check script placeholder.\""
+  }
+}

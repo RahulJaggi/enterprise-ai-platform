@@ -1,0 +1,12 @@
+{
+  "name": "@enterprise-ai/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Enterprise AI Platform Web Portal (Frontend)",
+  "scripts": {
+    "dev": "echo \"[web] Development server not yet scaffolded. Run in Phase 2.\"",
+    "build": "echo \"[web] Build script placeholder.\"",
+    "lint": "echo \"[web] Lint script placeholder.\"",
+    "type-check": "echo \"[web] Type-check script placeholder.\""
+  }
+}

@@ -1,0 +1,9 @@
+# Build & Cache Directories
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+coverage/
+node_modules/

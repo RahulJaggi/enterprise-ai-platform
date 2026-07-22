@@ -1,0 +1,12 @@
+{
+  "name": "@enterprise-ai/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Enterprise AI Platform API Gateway (Backend Core)",
+  "scripts": {
+    "dev": "echo \"[api] Development server not yet scaffolded. Run in Phase 2.\"",
+    "build": "echo \"[api] Build script placeholder.\"",
+    "lint": "echo \"[api] Lint script placeholder.\"",
+    "type-check": "echo \"[api] Type-check script placeholder.\""
+  }
+}

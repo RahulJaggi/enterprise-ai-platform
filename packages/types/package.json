@@ -1,0 +1,11 @@
+{
+  "name": "@enterprise-ai/types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Enterprise AI Platform Shared TypeScript Interfaces and DTOs",
+  "scripts": {
+    "build": "echo \"[types] Build script placeholder.\"",
+    "lint": "echo \"[types] Lint script placeholder.\"",
+    "type-check": "echo \"[types] Type-check script placeholder.\""
+  }
+}

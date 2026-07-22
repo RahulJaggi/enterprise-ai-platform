@@ -1,0 +1,23 @@
+{
+  "name": "enterprise-ai-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production-grade Enterprise AI Platform monorepo workspace",
+  "packageManager": "pnpm@10.2.0",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
