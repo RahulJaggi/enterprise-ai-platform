@@ -18,6 +18,13 @@ interface QdrantCollectionResponse {
     status?: string;
     vectors_count?: number;
     points_count?: number;
+    config?: {
+      params?: {
+        vectors?: {
+          size?: number;
+        };
+      };
+    };
   };
   status?: string;
 }
@@ -64,39 +71,53 @@ export class QdrantProvider implements IVectorProvider {
       });
 
       if (response.ok) {
-        this.logger.log(`Collection already exists: ${collectionName}`);
-        return;
-      }
+        const data = (await response.json()) as QdrantCollectionResponse;
+        const existingSize = data.result?.config?.params?.vectors?.size;
 
-      if (response.status === 404) {
-        this.logger.log(
-          `Collection missing. Creating Qdrant collection: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
-        );
-
-        const createResponse = await fetch(checkEndpoint, {
-          method: 'PUT',
-          headers: this.getHeaders(),
-          body: JSON.stringify({
-            vectors: {
-              size: vectorSize,
-              distance: 'Cosine',
-            },
-          }),
-          signal: AbortSignal.timeout(this.timeoutMs),
-        });
-
-        if (!createResponse.ok) {
-          const errText = await createResponse.text();
-          throw new InternalServerErrorException(
-            `Failed to create Qdrant collection [${collectionName}]: ${errText}`,
+        if (existingSize && existingSize !== vectorSize) {
+          this.logger.warn(
+            `Collection [${collectionName}] vector size mismatch (existing: ${existingSize}, new: ${vectorSize}). Recreating collection...`,
           );
-        }
 
-        this.logger.log(
-          `Collection created: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
-        );
-        return;
+          await fetch(checkEndpoint, {
+            method: 'DELETE',
+            headers: this.getHeaders(),
+            signal: AbortSignal.timeout(this.timeoutMs),
+          });
+          // Fall through to create collection with new size
+        } else {
+          this.logger.log(`Collection already exists: ${collectionName}`);
+          return;
+        }
       }
+
+      this.logger.log(
+        `Collection missing or size mismatched. Creating Qdrant collection: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
+      );
+
+      const createResponse = await fetch(checkEndpoint, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          vectors: {
+            size: vectorSize,
+            distance: 'Cosine',
+          },
+        }),
+        signal: AbortSignal.timeout(this.timeoutMs),
+      });
+
+      if (!createResponse.ok) {
+        const errText = await createResponse.text();
+        throw new InternalServerErrorException(
+          `Failed to create Qdrant collection [${collectionName}]: ${errText}`,
+        );
+      }
+
+      this.logger.log(
+        `Collection created: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
+      );
+      return;
     } catch (error: unknown) {
       if (
         error instanceof Error &&

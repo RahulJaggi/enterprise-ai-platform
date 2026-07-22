@@ -33,6 +33,7 @@ export class EmbeddingService {
           embeddingDimension: res.dimension,
           generationTimeMs: res.durationMs,
           status: 'generated',
+          embedding: res.embedding,
         });
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Embedding failed';

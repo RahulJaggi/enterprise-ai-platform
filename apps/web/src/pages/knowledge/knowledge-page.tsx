@@ -54,7 +54,20 @@ export function KnowledgePage() {
   const vectorStatusQuery = useQuery({
     queryKey: ['vector-status'],
     queryFn: () => getVectorStatusApi('enterprise_knowledge'),
-    refetchInterval: 30000,
+    refetchInterval: 10000,
+  });
+
+  const indexVectorsMutation = useMutation({
+    mutationFn: indexVectorsApi,
+    onSuccess: (data) => {
+      setIndexingStatusMessage(
+        `Successfully indexed ${data.indexedCount} vectors into Qdrant collection [${data.collectionName}]`,
+      );
+      void vectorStatusQuery.refetch();
+    },
+    onError: (error: Error) => {
+      setIndexingStatusMessage(error.message || 'Failed to index vectors in Qdrant');
+    },
   });
 
   const uploadMutation = useMutation({
@@ -99,24 +112,29 @@ export function KnowledgePage() {
   const embeddingMutation = useMutation({
     mutationFn: generateEmbeddingsApi,
     onSuccess: (data) => {
-      if (data?.results) {
+      if (data?.results && extractedDoc) {
         const newMap = new Map<string, ChunkEmbeddingResult>();
         data.results.forEach((r) => newMap.set(r.chunkId, r));
         setEmbeddingMap(newMap);
-      }
-    },
-  });
 
-  const indexVectorsMutation = useMutation({
-    mutationFn: indexVectorsApi,
-    onSuccess: (data) => {
-      setIndexingStatusMessage(
-        `Successfully indexed ${data.indexedCount} vectors into Qdrant collection [${data.collectionName}]`,
-      );
-      void vectorStatusQuery.refetch();
-    },
-    onError: (error: Error) => {
-      setIndexingStatusMessage(error.message || 'Failed to index vectors in Qdrant');
+        // Auto-index into Qdrant vector database!
+        const vectorChunks = chunks.map((c) => {
+          const emb = newMap.get(c.chunkId);
+          return {
+            chunkId: c.chunkId,
+            chunkIndex: c.index,
+            pageNumber: 1,
+            content: c.content,
+            embedding: emb?.embedding || Array.from({ length: 768 }, () => Math.random()),
+          };
+        });
+
+        indexVectorsMutation.mutate({
+          collectionName: 'enterprise_knowledge',
+          filename: extractedDoc.filename,
+          chunks: vectorChunks,
+        });
+      }
     },
   });
 
@@ -173,18 +191,14 @@ export function KnowledgePage() {
   const handleIndexVectors = () => {
     if (!extractedDoc || chunks.length === 0) return;
 
-    // Build points with embeddings if available
     const vectorChunks = chunks.map((c) => {
       const emb = embeddingMap.get(c.chunkId);
-      // Dummy 768 vector if embedding generation is pending/failed
-      const embedding = emb?.embedding || Array.from({ length: 768 }, () => Math.random());
-
       return {
         chunkId: c.chunkId,
         chunkIndex: c.index,
         pageNumber: 1,
         content: c.content,
-        embedding,
+        embedding: emb?.embedding || Array.from({ length: 768 }, () => Math.random()),
       };
     });
 

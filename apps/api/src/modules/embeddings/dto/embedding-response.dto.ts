@@ -12,13 +12,20 @@ export class ChunkEmbeddingResultDto {
 
   @ApiProperty({ example: 'generated', enum: ['generated', 'failed'] })
   status!: 'generated' | 'failed';
+
+  @ApiProperty({
+    type: [Number],
+    required: false,
+    description: 'The raw float embedding vector',
+  })
+  embedding?: number[];
 }
 
 export class EmbeddingResponseDataDto {
   @ApiProperty({ example: 5 })
   totalChunks!: number;
 
-  @ApiProperty({ example: 'qwen2.5:7b' })
+  @ApiProperty({ example: 'nomic-embed-text' })
   embeddingModel!: string;
 
   @ApiProperty({ type: [ChunkEmbeddingResultDto] })
