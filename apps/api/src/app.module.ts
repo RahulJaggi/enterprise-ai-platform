@@ -7,6 +7,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { DocumentModule } from './modules/documents/document.module';
 import { ChunkModule } from './modules/chunks/chunk.module';
 import { EmbeddingModule } from './modules/embeddings/embedding.module';
+import { VectorModule } from './modules/vector/vector.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EmbeddingModule } from './modules/embeddings/embedding.module';
     DocumentModule,
     ChunkModule,
     EmbeddingModule,
+    VectorModule,
   ],
 })
 export class AppModule implements NestModule {

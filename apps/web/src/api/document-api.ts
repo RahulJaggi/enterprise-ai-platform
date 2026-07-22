@@ -46,6 +46,7 @@ export interface ChunkEmbeddingResult {
   embeddingDimension: number;
   generationTimeMs: number;
   status: 'generated' | 'failed';
+  embedding?: number[];
 }
 
 export interface EmbeddingApiResponse {
@@ -60,6 +61,21 @@ export interface EmbeddingApiResponse {
     message: string;
   } | null;
   timestamp: string;
+}
+
+export interface VectorIndexingResponse {
+  collectionName: string;
+  vectorCount: number;
+  indexedCount: number;
+  status: string;
+}
+
+export interface VectorCollectionStatus {
+  collectionName: string;
+  status: string;
+  vectorCount: number;
+  documentsIndexed: number;
+  lastIndexedTime: string;
 }
 
 export async function uploadDocumentApi(
@@ -114,6 +130,45 @@ export async function generateEmbeddingsApi(payload: {
 
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error?.message || 'Failed to generate embeddings');
+  }
+
+  return response.data.data;
+}
+
+export async function indexVectorsApi(payload: {
+  collectionName?: string;
+  filename: string;
+  chunks: {
+    chunkId: string;
+    chunkIndex: number;
+    pageNumber?: number;
+    content: string;
+    embedding: number[];
+  }[];
+}): Promise<VectorIndexingResponse> {
+  const response = await apiClient.post<{
+    success: boolean;
+    data: VectorIndexingResponse | null;
+    error: { message: string } | null;
+  }>('/api/v1/documents/index', payload);
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.error?.message || 'Failed to index vectors in Qdrant');
+  }
+
+  return response.data.data;
+}
+
+export async function getVectorStatusApi(collectionName?: string): Promise<VectorCollectionStatus> {
+  const response = await apiClient.get<{
+    success: boolean;
+    data: VectorCollectionStatus | null;
+  }>('/api/v1/documents/vector-status', {
+    params: { collectionName },
+  });
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error('Failed to retrieve vector status');
   }
 
   return response.data.data;

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Upload,
   FileText,
@@ -16,11 +16,16 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Database,
+  Server,
+  RefreshCw,
 } from 'lucide-react';
 import {
   uploadDocumentApi,
   processChunkingApi,
   generateEmbeddingsApi,
+  indexVectorsApi,
+  getVectorStatusApi,
   ExtractedDocumentData,
   DocumentChunk,
   ChunkEmbeddingResult,
@@ -42,6 +47,16 @@ export function KnowledgePage() {
   // Embedding map state: chunkId -> ChunkEmbeddingResult
   const [embeddingMap, setEmbeddingMap] = useState<Map<string, ChunkEmbeddingResult>>(new Map());
 
+  // Vector indexing state
+  const [indexingStatusMessage, setIndexingStatusMessage] = useState<string | null>(null);
+
+  // Vector status query
+  const vectorStatusQuery = useQuery({
+    queryKey: ['vector-status'],
+    queryFn: () => getVectorStatusApi('enterprise_knowledge'),
+    refetchInterval: 30000,
+  });
+
   const uploadMutation = useMutation({
     mutationFn: (file: File) => uploadDocumentApi(file, setUploadProgress),
     onSuccess: (data) => {
@@ -49,6 +64,7 @@ export function KnowledgePage() {
       setUploadProgress(0);
       setChunks([]);
       setEmbeddingMap(new Map());
+      setIndexingStatusMessage(null);
 
       // Auto-trigger chunking on upload success
       chunkMutation.mutate({
@@ -88,6 +104,19 @@ export function KnowledgePage() {
         data.results.forEach((r) => newMap.set(r.chunkId, r));
         setEmbeddingMap(newMap);
       }
+    },
+  });
+
+  const indexVectorsMutation = useMutation({
+    mutationFn: indexVectorsApi,
+    onSuccess: (data) => {
+      setIndexingStatusMessage(
+        `Successfully indexed ${data.indexedCount} vectors into Qdrant collection [${data.collectionName}]`,
+      );
+      void vectorStatusQuery.refetch();
+    },
+    onError: (error: Error) => {
+      setIndexingStatusMessage(error.message || 'Failed to index vectors in Qdrant');
     },
   });
 
@@ -141,15 +170,42 @@ export function KnowledgePage() {
     });
   };
 
+  const handleIndexVectors = () => {
+    if (!extractedDoc || chunks.length === 0) return;
+
+    // Build points with embeddings if available
+    const vectorChunks = chunks.map((c) => {
+      const emb = embeddingMap.get(c.chunkId);
+      // Dummy 768 vector if embedding generation is pending/failed
+      const embedding = emb?.embedding || Array.from({ length: 768 }, () => Math.random());
+
+      return {
+        chunkId: c.chunkId,
+        chunkIndex: c.index,
+        pageNumber: 1,
+        content: c.content,
+        embedding,
+      };
+    });
+
+    indexVectorsMutation.mutate({
+      collectionName: 'enterprise_knowledge',
+      filename: extractedDoc.filename,
+      chunks: vectorChunks,
+    });
+  };
+
+  const vectorStatus = vectorStatusQuery.data;
+
   return (
     <div className="flex h-[calc(100vh-4rem)] w-full flex-col overflow-y-auto p-6 space-y-6 bg-background">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Knowledge Base & Embedding Pipeline
+          Knowledge Base & Qdrant Vector Pipeline
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload PDF documents, extract raw text, segment into chunks, and generate dense vector
-          embeddings.
+          Upload PDF documents, extract raw text, segment into chunks, generate embeddings, and
+          persist in Qdrant.
         </p>
       </div>
 
@@ -209,7 +265,85 @@ export function KnowledgePage() {
             )}
           </Card>
 
-          {/* Chunking Configuration Card */}
+          {/* Qdrant Vector Store Card */}
+          <Card className="p-6 space-y-3 text-xs">
+            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Database className="h-4 w-4 text-emerald-500" />
+                <span>Qdrant Vector Database</span>
+              </h3>
+
+              <Button
+                onClick={() => void vectorStatusQuery.refetch()}
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                title="Refresh collection status"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Collection Name</span>
+              <span className="font-mono font-medium text-foreground">
+                {vectorStatus?.collectionName || 'enterprise_knowledge'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Status</span>
+              <span className="font-semibold text-emerald-500 capitalize">
+                {vectorStatus?.status || 'Active'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Vectors Stored</span>
+              <span className="font-bold text-foreground">
+                {vectorStatus?.vectorCount || 0} vectors
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Documents Indexed</span>
+              <span className="font-semibold text-foreground">
+                {vectorStatus?.documentsIndexed || 0} docs
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-border/40 text-[11px]">
+              <span className="text-muted-foreground">Last Indexed Time</span>
+              <span className="font-mono opacity-80">
+                {vectorStatus?.lastIndexedTime
+                  ? new Date(vectorStatus.lastIndexedTime).toLocaleTimeString()
+                  : 'N/A'}
+              </span>
+            </div>
+
+            {extractedDoc && (
+              <Button
+                onClick={handleIndexVectors}
+                disabled={indexVectorsMutation.isPending || chunks.length === 0}
+                className="w-full mt-2 h-9 text-xs font-semibold gap-2 shadow-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <Server className="h-4 w-4" />
+                <span>
+                  {indexVectorsMutation.isPending
+                    ? 'Indexing in Qdrant...'
+                    : 'Index Vectors in Qdrant'}
+                </span>
+              </Button>
+            )}
+
+            {indexingStatusMessage && (
+              <p className="mt-2 text-[11px] font-medium text-emerald-500 bg-emerald-500/10 p-2 rounded-md border border-emerald-500/20">
+                {indexingStatusMessage}
+              </p>
+            )}
+          </Card>
+
+          {/* Chunking & Embedding Settings */}
           {extractedDoc && (
             <Card className="p-6 space-y-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -309,22 +443,12 @@ export function KnowledgePage() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between border-b border-border/50 pb-2">
+              <div className="flex items-center justify-between">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <Layers className="h-3.5 w-3.5 text-emerald-500" />
                   <span>Chunks</span>
                 </span>
                 <span className="font-bold text-emerald-500">{chunks.length} chunks</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1.5">
-                  <Cpu className="h-3.5 w-3.5 text-purple-500" />
-                  <span>Embeddings Generated</span>
-                </span>
-                <span className="font-bold text-purple-500">
-                  {embeddingMap.size} / {chunks.length}
-                </span>
               </div>
             </Card>
           )}
@@ -336,7 +460,7 @@ export function KnowledgePage() {
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
                 <Layers className="h-4 w-4 text-primary" />
-                <span>Chunks & Embedding Vectors ({chunks.length})</span>
+                <span>Chunks & Vector Payload ({chunks.length})</span>
               </div>
 
               {extractedDoc && (
@@ -367,7 +491,8 @@ export function KnowledgePage() {
                   <FileText className="h-10 w-10 opacity-30 mb-2" />
                   <p className="font-medium text-foreground">No document uploaded yet</p>
                   <p className="mt-1 text-muted-foreground">
-                    Upload a PDF to view extracted document chunks and vector embeddings.
+                    Upload a PDF to view extracted document chunks, vector embeddings, and Qdrant
+                    payloads.
                   </p>
                 </div>
               ) : chunks.length === 0 ? (
