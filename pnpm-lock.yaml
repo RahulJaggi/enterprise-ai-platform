@@ -38,6 +38,15 @@ importers:
 
   apps/api:
     dependencies:
+      '@enterprise-ai/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@enterprise-ai/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@enterprise-ai/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@nestjs/common':
         specifier: ^10.4.15
         version: 10.4.22(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -120,6 +129,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@enterprise-ai/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@enterprise-ai/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@enterprise-ai/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.82.0(react@19.2.8))
@@ -190,15 +208,35 @@ importers:
 
   packages/ai: {}
 
+  packages/config:
+    devDependencies:
+      '@enterprise-ai/tsconfig':
+        specifier: workspace:*
+        version: link:typescript
+      '@types/node':
+        specifier: ^20.17.14
+        version: 20.19.43
+
   packages/config/eslint: {}
 
   packages/config/prettier: {}
 
   packages/config/typescript: {}
 
-  packages/shared: {}
+  packages/shared:
+    devDependencies:
+      '@enterprise-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../config/typescript
+      '@types/node':
+        specifier: ^20.17.14
+        version: 20.19.43
 
-  packages/types: {}
+  packages/types:
+    devDependencies:
+      '@enterprise-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../config/typescript
 
   packages/ui: {}
 

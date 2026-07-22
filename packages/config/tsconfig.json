@@ -1,0 +1,7 @@
+{
+  "extends": "@enterprise-ai/tsconfig/base.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  },
+  "include": ["src/**/*", "eslint/**/*", "prettier/**/*", "typescript/**/*"]
+}
