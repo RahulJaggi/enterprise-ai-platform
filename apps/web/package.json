@@ -3,10 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "description": "Enterprise AI Platform Web Portal (Frontend)",
+  "type": "module",
   "scripts": {
-    "dev": "echo \"[web] Development server not yet scaffolded. Run in Phase 2.\"",
-    "build": "echo \"[web] Build script placeholder.\"",
-    "lint": "echo \"[web] Lint script placeholder.\"",
-    "type-check": "echo \"[web] Type-check script placeholder.\""
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@tanstack/react-query": "^5.64.1",
+    "axios": "^1.7.9",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.473.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^7.1.3",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@enterprise-ai/eslint-config": "workspace:*",
+    "@enterprise-ai/tsconfig": "workspace:*",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^20.17.14",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.9"
   }
 }
