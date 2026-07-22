@@ -8,7 +8,12 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IAiProvider, AiCompletionRequest, AiCompletionResponse } from './ollama.interface';
+import {
+  IAiProvider,
+  AiCompletionRequest,
+  AiCompletionResponse,
+  StreamEventData,
+} from './ollama.interface';
 
 interface OllamaChatResponse {
   model: string;
@@ -150,6 +155,147 @@ export class OllamaProvider implements IAiProvider {
       throw new InternalServerErrorException(
         `Failed to generate completion from Ollama provider: ${errorMessage}`,
       );
+    }
+  }
+
+  async *generateStreamingCompletion(
+    request: AiCompletionRequest,
+    externalSignal?: AbortSignal,
+  ): AsyncGenerator<StreamEventData> {
+    const startTime = Date.now();
+    const targetModel = request.model || this.defaultModel;
+    const endpoint = `${this.baseUrl}/api/chat`;
+
+    this.logger.log(`Stream started [Model: ${targetModel}, Provider: ${this.providerName}]`);
+
+    yield {
+      event: 'start',
+      data: {
+        model: targetModel,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    let totalTokens = 0;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
+
+      if (externalSignal) {
+        externalSignal.addEventListener('abort', () => controller.abort());
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: targetModel,
+          messages: [
+            ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
+            { role: 'user', content: request.prompt },
+          ],
+          stream: true,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let parsedMessage = errorText;
+        try {
+          const parsed = JSON.parse(errorText) as OllamaErrorResponse;
+          if (parsed.error) parsedMessage = parsed.error;
+        } catch {
+          // Keep raw
+        }
+        throw new Error(`Ollama provider returned HTTP ${response.status}: ${parsedMessage}`);
+      }
+
+      if (!response.body) {
+        throw new Error('Ollama response body is empty');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+
+          try {
+            const parsed = JSON.parse(trimmed) as OllamaChatResponse;
+            if (parsed.message?.content) {
+              totalTokens++;
+              yield {
+                event: 'token',
+                data: {
+                  token: parsed.message.content,
+                },
+              };
+            }
+          } catch {
+            // Ignore malformed partial lines
+          }
+        }
+      }
+
+      if (buffer.trim()) {
+        try {
+          const parsed = JSON.parse(buffer.trim()) as OllamaChatResponse;
+          if (parsed.message?.content) {
+            totalTokens++;
+            yield {
+              event: 'token',
+              data: {
+                token: parsed.message.content,
+              },
+            };
+          }
+        } catch {
+          // Ignore partial trailing text if invalid
+        }
+      }
+
+      const durationMs = Date.now() - startTime;
+      this.logger.log(
+        `Stream completed [Model: ${targetModel}, Duration: ${durationMs}ms, TokenCount: ${totalTokens}]`,
+      );
+
+      yield {
+        event: 'complete',
+        data: {
+          durationMs,
+          totalTokens,
+        },
+      };
+    } catch (error: unknown) {
+      const durationMs = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : 'Streaming error occurred';
+
+      this.logger.error(
+        `Stream error [Model: ${targetModel}, Duration: ${durationMs}ms]: ${errorMessage}`,
+      );
+
+      yield {
+        event: 'error',
+        data: {
+          error: errorMessage,
+        },
+      };
     }
   }
 }

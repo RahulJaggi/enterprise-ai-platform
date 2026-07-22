@@ -1,5 +1,9 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { AI_PROVIDER_TOKEN, IAiProvider } from '../../providers/ollama/ollama.interface';
+import {
+  AI_PROVIDER_TOKEN,
+  IAiProvider,
+  StreamEventData,
+} from '../../providers/ollama/ollama.interface';
 import { PromptService } from './prompts/prompt.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDataDto } from './dto/chat-response.dto';
@@ -30,5 +34,24 @@ export class AiService {
     return {
       response: completion.text,
     };
+  }
+
+  async *chatStream(dto: ChatRequestDto, signal?: AbortSignal): AsyncGenerator<StreamEventData> {
+    this.logger.log(
+      `Initiating streaming chat completion via provider [${this.aiProvider.providerName}]`,
+    );
+
+    const formattedPrompt = this.promptService.buildPrompt({
+      userPrompt: dto.message,
+      templateType: 'assistant',
+    });
+
+    yield* this.aiProvider.generateStreamingCompletion(
+      {
+        prompt: formattedPrompt.prompt,
+        systemPrompt: formattedPrompt.systemPrompt,
+      },
+      signal,
+    );
   }
 }
