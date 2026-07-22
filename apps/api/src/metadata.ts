@@ -1,4 +1,4 @@
- 
+/* eslint-disable */
 export default async () => {
     const t = {
         ["./common/dto/api-response.dto"]: await import("./common/dto/api-response.dto")
