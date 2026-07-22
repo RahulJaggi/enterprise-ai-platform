@@ -137,8 +137,11 @@ export class QdrantProvider implements IVectorProvider {
   ): Promise<IndexingResult> {
     const collectionName = collectionNameParam || this.defaultCollectionName;
 
-    const firstPoint = points[0];
-    if (!firstPoint || points.length === 0) {
+    // Filter out points without valid non-empty embeddings
+    const validPoints = points.filter((p) => Array.isArray(p.embedding) && p.embedding.length > 0);
+
+    const firstPoint = validPoints[0];
+    if (!firstPoint || validPoints.length === 0) {
       return {
         collectionName,
         vectorCount: 0,
@@ -151,7 +154,7 @@ export class QdrantProvider implements IVectorProvider {
     const vectorSize = firstPoint.embedding.length;
     await this.ensureCollection(collectionName, vectorSize);
 
-    const qdrantPoints = points.map((p) => {
+    const qdrantPoints = validPoints.map((p) => {
       const pointUuid = randomUUID();
       return {
         id: pointUuid,
@@ -183,14 +186,14 @@ export class QdrantProvider implements IVectorProvider {
         throw new InternalServerErrorException(`Qdrant upsert points failed: ${errorText}`);
       }
 
-      this.logger.log(`Number of vectors inserted: ${points.length}`);
+      this.logger.log(`Number of vectors inserted: ${validPoints.length}`);
 
       const info = await this.getCollectionInfo(collectionName);
 
       return {
         collectionName,
         vectorCount: info.vectorsCount,
-        indexedCount: points.length,
+        indexedCount: validPoints.length,
         status: 'indexed',
       };
     } catch (error: unknown) {
