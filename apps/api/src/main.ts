@@ -5,6 +5,7 @@ import { Logger } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { SYSTEM_CONSTANTS } from './common/constants/system.constants';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -14,6 +15,10 @@ async function bootstrap(): Promise<void> {
 
   // Use Pino Logger
   app.useLogger(app.get(Logger));
+
+  // Increase body parser limits for large RAG document vector payloads (up to 50MB)
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Security & Middleware
   app.use(helmet());

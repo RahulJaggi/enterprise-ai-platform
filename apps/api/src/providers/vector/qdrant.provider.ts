@@ -31,6 +31,7 @@ export class QdrantProvider implements IVectorProvider {
   private readonly apiKey: string;
   private readonly defaultCollectionName: string;
   private readonly timeoutMs: number;
+  private readonly batchSize: number;
 
   constructor(private readonly configService: ConfigService) {
     this.baseUrl = this.configService.get<string>('QDRANT_URL', 'http://localhost:6333');
@@ -39,7 +40,10 @@ export class QdrantProvider implements IVectorProvider {
       'QDRANT_COLLECTION_NAME',
       'enterprise_knowledge',
     );
-    this.timeoutMs = this.configService.get<number>('QDRANT_TIMEOUT_MS', 15000);
+    // Increased timeout to 60 seconds for large batch vector indexing
+    this.timeoutMs = this.configService.get<number>('QDRANT_TIMEOUT_MS', 60000);
+    // Configurable Qdrant batch size for payload scalability
+    this.batchSize = this.configService.get<number>('QDRANT_BATCH_SIZE', 50);
   }
 
   private getHeaders(): Record<string, string> {
@@ -64,13 +68,13 @@ export class QdrantProvider implements IVectorProvider {
       });
 
       if (response.ok) {
-        this.logger.log(`Collection already exists: ${collectionName}`);
+        this.logger.log(`[Qdrant Collection] Collection already exists: [${collectionName}]`);
         return;
       }
 
       if (response.status === 404) {
         this.logger.log(
-          `Collection missing. Creating Qdrant collection: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
+          `[Qdrant Collection] Collection missing. Creating Qdrant collection: [${collectionName}] (VectorSize: ${vectorSize}, Distance: Cosine)`,
         );
 
         const createResponse = await fetch(checkEndpoint, {
@@ -92,9 +96,7 @@ export class QdrantProvider implements IVectorProvider {
           );
         }
 
-        this.logger.log(
-          `Collection created: ${collectionName} [VectorSize: ${vectorSize}, Distance: Cosine]`,
-        );
+        this.logger.log(`[Qdrant Collection] Collection [${collectionName}] created successfully.`);
         return;
       }
     } catch (error: unknown) {
@@ -114,6 +116,7 @@ export class QdrantProvider implements IVectorProvider {
     collectionNameParam: string | undefined,
     points: VectorPoint[],
   ): Promise<IndexingResult> {
+    const stageStartTime = Date.now();
     const collectionName = collectionNameParam || this.defaultCollectionName;
 
     // Filter out points without valid non-empty embeddings
@@ -121,6 +124,7 @@ export class QdrantProvider implements IVectorProvider {
 
     const firstPoint = validPoints[0];
     if (!firstPoint || validPoints.length === 0) {
+      this.logger.warn(`[Qdrant Upsert] No valid vector points provided for indexing.`);
       return {
         collectionName,
         vectorCount: 0,
@@ -129,14 +133,26 @@ export class QdrantProvider implements IVectorProvider {
       };
     }
 
-    // Dynamic dimension detection from input embedding
     const vectorSize = firstPoint.embedding.length;
     await this.ensureCollection(collectionName, vectorSize);
 
-    const qdrantPoints = validPoints.map((p) => {
-      const pointUuid = randomUUID();
-      return {
-        id: pointUuid,
+    const totalPoints = validPoints.length;
+    const totalBatches = Math.ceil(totalPoints / this.batchSize);
+
+    this.logger.log(
+      `[Qdrant Upsert Started] Points: ${totalPoints} | Batch Size: ${this.batchSize} | Total Batches: ${totalBatches} | Collection: [${collectionName}]`,
+    );
+
+    const endpoint = `${this.baseUrl}/collections/${collectionName}/points?wait=true`;
+    let cumulativeInserted = 0;
+
+    for (let i = 0; i < totalPoints; i += this.batchSize) {
+      const batchIdx = Math.floor(i / this.batchSize) + 1;
+      const batchPoints = validPoints.slice(i, i + this.batchSize);
+      const batchStartTime = Date.now();
+
+      const qdrantPoints = batchPoints.map((p) => ({
+        id: randomUUID(),
         vector: p.embedding,
         payload: {
           documentId: p.documentId || `doc_${p.filename}`,
@@ -146,54 +162,63 @@ export class QdrantProvider implements IVectorProvider {
           chunkIndex: p.chunkIndex,
           content: p.content,
         },
-      };
-    });
+      }));
 
-    const endpoint = `${this.baseUrl}/collections/${collectionName}/points?wait=true`;
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: this.getHeaders(),
-        body: JSON.stringify({ points: qdrantPoints }),
-        signal: AbortSignal.timeout(this.timeoutMs),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        this.logger.error(`Qdrant upsert error: ${errorText}`);
-        throw new InternalServerErrorException(`Qdrant upsert points failed: ${errorText}`);
-      }
-
-      this.logger.log(`Number of vectors inserted: ${validPoints.length}`);
-
-      let totalVectors = validPoints.length;
       try {
-        const info = await this.getCollectionInfo(collectionName);
-        if (typeof info.vectorsCount === 'number' && info.vectorsCount >= 0) {
-          totalVectors = info.vectorsCount;
-        }
-      } catch (err: unknown) {
-        this.logger.warn(`Failed to retrieve post-index collection info: ${err}`);
-      }
+        const response = await fetch(endpoint, {
+          method: 'PUT',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ points: qdrantPoints }),
+          signal: AbortSignal.timeout(this.timeoutMs),
+        });
 
-      return {
-        collectionName: collectionName || this.defaultCollectionName,
-        vectorCount: totalVectors,
-        indexedCount: validPoints.length,
-        status: 'indexed',
-      };
-    } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        (error.message.includes('ECONNREFUSED') || error.message.includes('fetch failed'))
-      ) {
-        throw new ServiceUnavailableException(
-          `Qdrant vector database unreachable at ${this.baseUrl}`,
+        if (!response.ok) {
+          const errorText = await response.text();
+          this.logger.error(`[Qdrant Upsert Error] Batch #${batchIdx} failed: ${errorText}`);
+          throw new InternalServerErrorException(
+            `Qdrant upsert points failed for batch #${batchIdx}: ${errorText}`,
+          );
+        }
+
+        cumulativeInserted += batchPoints.length;
+        const batchDuration = Date.now() - batchStartTime;
+        this.logger.log(
+          `[Qdrant Batch ${batchIdx}/${totalBatches}] Successfully inserted ${batchPoints.length} points in ${batchDuration}ms | Cumulative: ${cumulativeInserted}/${totalPoints}`,
         );
+      } catch (error: unknown) {
+        if (
+          error instanceof Error &&
+          (error.message.includes('ECONNREFUSED') || error.message.includes('fetch failed'))
+        ) {
+          throw new ServiceUnavailableException(
+            `Qdrant vector database unreachable at ${this.baseUrl}`,
+          );
+        }
+        throw error;
       }
-      throw error;
     }
+
+    const stageDurationMs = Date.now() - stageStartTime;
+    this.logger.log(
+      `[Qdrant Indexing Completed] Total vectors inserted: ${cumulativeInserted} across ${totalBatches} batches in ${stageDurationMs}ms`,
+    );
+
+    let totalVectors = cumulativeInserted;
+    try {
+      const info = await this.getCollectionInfo(collectionName);
+      if (typeof info.vectorsCount === 'number' && info.vectorsCount >= 0) {
+        totalVectors = info.vectorsCount;
+      }
+    } catch (err: unknown) {
+      this.logger.warn(`Failed to retrieve post-index collection info: ${err}`);
+    }
+
+    return {
+      collectionName,
+      vectorCount: totalVectors,
+      indexedCount: cumulativeInserted,
+      status: 'indexed',
+    };
   }
 
   async getCollectionInfo(collectionNameParam?: string): Promise<CollectionInfo> {

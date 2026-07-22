@@ -28,10 +28,12 @@ export class VectorService {
   }
 
   async indexDocumentChunks(dto: IndexRequestDto): Promise<VectorIndexingResponseDataDto> {
+    const stageStartTime = Date.now();
     const collectionName = dto.collectionName || this.getDefaultCollection();
+    const totalChunks = dto.chunks.length;
 
     this.logger.log(
-      `Indexing ${dto.chunks.length} vector chunks for file [${dto.filename}] into Qdrant collection [${collectionName}]`,
+      `[Vector Pipeline Started] Document: [${dto.filename}] | Chunks: ${totalChunks} | Target Collection: [${collectionName}]`,
     );
 
     const points: VectorPoint[] = dto.chunks.map((c) => ({
@@ -48,6 +50,8 @@ export class VectorService {
     this.documentTracker.add(dto.filename);
     this.lastIndexedIsoTime = new Date().toISOString();
 
+    const pipelineDurationMs = Date.now() - stageStartTime;
+
     const responseDto: VectorIndexingResponseDataDto = {
       collectionName: result?.collectionName || collectionName,
       vectorCount: typeof result?.vectorCount === 'number' ? result.vectorCount : points.length,
@@ -56,7 +60,7 @@ export class VectorService {
     };
 
     this.logger.log(
-      `Successfully indexed ${responseDto.indexedCount} vectors into Qdrant collection [${responseDto.collectionName}]`,
+      `[Vector Pipeline Completed] Document: [${dto.filename}] | Indexed Vectors: ${responseDto.indexedCount} | Total Collection Vectors: ${responseDto.vectorCount} | Total Duration: ${pipelineDurationMs}ms`,
     );
 
     return responseDto;

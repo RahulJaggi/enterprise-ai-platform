@@ -117,23 +117,27 @@ export function KnowledgePage() {
         data.results.forEach((r) => newMap.set(r.chunkId, r));
         setEmbeddingMap(newMap);
 
-        // Auto-index into Qdrant vector database!
-        const vectorChunks = chunks.map((c) => {
-          const emb = newMap.get(c.chunkId);
-          return {
-            chunkId: c.chunkId,
-            chunkIndex: c.index,
-            pageNumber: 1,
-            content: c.content,
-            embedding: emb?.embedding || Array.from({ length: 768 }, () => Math.random()),
-          };
-        });
+        // Auto-index valid vectors into Qdrant vector database!
+        const vectorChunks = chunks
+          .map((c) => {
+            const emb = newMap.get(c.chunkId);
+            return {
+              chunkId: c.chunkId,
+              chunkIndex: c.index,
+              pageNumber: 1,
+              content: c.content,
+              embedding: emb?.embedding || [],
+            };
+          })
+          .filter((vc) => vc.embedding.length > 0);
 
-        indexVectorsMutation.mutate({
-          collectionName: 'enterprise_knowledge',
-          filename: extractedDoc.filename,
-          chunks: vectorChunks,
-        });
+        if (vectorChunks.length > 0) {
+          indexVectorsMutation.mutate({
+            collectionName: 'enterprise_knowledge',
+            filename: extractedDoc.filename,
+            chunks: vectorChunks,
+          });
+        }
       }
     },
   });
@@ -191,16 +195,23 @@ export function KnowledgePage() {
   const handleIndexVectors = () => {
     if (!extractedDoc || chunks.length === 0) return;
 
-    const vectorChunks = chunks.map((c) => {
-      const emb = embeddingMap.get(c.chunkId);
-      return {
-        chunkId: c.chunkId,
-        chunkIndex: c.index,
-        pageNumber: 1,
-        content: c.content,
-        embedding: emb?.embedding || Array.from({ length: 768 }, () => Math.random()),
-      };
-    });
+    const vectorChunks = chunks
+      .map((c) => {
+        const emb = embeddingMap.get(c.chunkId);
+        return {
+          chunkId: c.chunkId,
+          chunkIndex: c.index,
+          pageNumber: 1,
+          content: c.content,
+          embedding: emb?.embedding || [],
+        };
+      })
+      .filter((vc) => vc.embedding.length > 0);
+
+    if (vectorChunks.length === 0) {
+      setIndexingStatusMessage('No valid chunk embeddings available to index.');
+      return;
+    }
 
     indexVectorsMutation.mutate({
       collectionName: 'enterprise_knowledge',

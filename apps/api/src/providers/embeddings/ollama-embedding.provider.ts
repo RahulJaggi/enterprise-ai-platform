@@ -29,7 +29,8 @@ export class OllamaEmbeddingProvider implements IEmbeddingProvider {
       'OLLAMA_EMBEDDING_MODEL',
       'nomic-embed-text',
     );
-    this.timeoutMs = this.configService.get<number>('OLLAMA_TIMEOUT_MS', 30000);
+    // Increased default timeout for large document RAG pipelines
+    this.timeoutMs = this.configService.get<number>('OLLAMA_TIMEOUT_MS', 120000);
   }
 
   async generateEmbedding(text: string, model?: string): Promise<EmbeddingResult> {
@@ -39,7 +40,6 @@ export class OllamaEmbeddingProvider implements IEmbeddingProvider {
     try {
       return await this.fetchEmbeddingFromOllama(text, targetModel, startTime);
     } catch (firstError: unknown) {
-      // If requested model is a chat model that doesn't support embeddings, fallback to nomic-embed-text
       if (
         targetModel !== this.fallbackModel &&
         firstError instanceof InternalServerErrorException &&
