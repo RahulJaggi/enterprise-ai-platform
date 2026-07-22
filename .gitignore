@@ -62,7 +62,8 @@ pgdata/
 *.db
 
 # Ollama / Local Models / Weights / Caches
-models/
+/models/
+!**/src/**/models/
 .ollama/
 *.bin
 *.onnx
